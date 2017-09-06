@@ -1,5 +1,16 @@
 {
   "name": "trackyourrack",
   "app_id": "",
-  "type": "ionic1"
+  "type": "ionic1",
+  "gulpStartupTasks": [
+    "sass",
+    "watch"
+  ],
+  "integrations": {
+    "gulp": {},
+    "cordova": {}
+  },
+  "watchPatterns": [
+    "scss/**/*"
+  ]
 }

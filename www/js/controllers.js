@@ -1,28 +1,66 @@
-angular.module('starter.controllers', [])
+angular.module('app.controllers', [])
+  
+.controller('homeCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
 
-.controller('DashCtrl', function($scope) {})
 
-.controller('ChatsCtrl', function($scope, Chats) {
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
+}])
+   
+.controller('profileCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
 
-  $scope.chats = Chats.all();
-  $scope.remove = function(chat) {
-    Chats.remove(chat);
-  };
+
+}])
+   
+.controller('friendsCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
+
+
+}])
+      
+.controller('chatCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
+
+
+}])
+   
+.controller('aboutCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
+
+
+}])
+   
+.controller('wishListCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
+
+
+}])
+   
+.controller('myRackCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
+
+
+}])
+   
+.controller('scannerPopupCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
+
+
+}])
+   
+// Handles login   
+.controller('loginCtrl', function ($scope, $stateParams) {
+/*.controller('LoginCtrl', function ($scope, $rootScope,$ionicPopup, LoginService,$state) {*/
+/*$scope.data = { };
+    
+  $scope.login = function (data) {
+ LoginService.login(data.email,data.password).then(function (isAuthenticated) {
+      $state.go('Home', {}, {reload: true});
+      $rootScope.email = data.email;
+    }, 
+        function (err) {
+            var alertPopup = $ionicPopup.alert({
+            title: 'Login failed.',
+            template: 'Please verify your credentials, and try to log in again.'
+            });
+        });
+  };*/
 })
+   
+.controller('signupCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
 
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
-})
 
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
-});
+}])
+ 

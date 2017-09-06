@@ -1,50 +1,56 @@
-angular.module('starter.services', [])
+// Used to interact with database
+angular
 
-.factory('Chats', function() {
-  // Might use a resource here that returns a JSON array
+.module('app.services', [])
 
-  // Some fake testing data
-  var chats = [{
-    id: 0,
-    name: 'Ben Sparrow',
-    lastText: 'You on your way?',
-    face: 'img/ben.png'
-  }, {
-    id: 1,
-    name: 'Max Lynx',
-    lastText: 'Hey, it\'s me',
-    face: 'img/max.png'
-  }, {
-    id: 2,
-    name: 'Adam Bradleyson',
-    lastText: 'I should buy a boat',
-    face: 'img/adam.jpg'
-  }, {
-    id: 3,
-    name: 'Perry Governor',
-    lastText: 'Look at my mukluks!',
-    face: 'img/perry.png'
-  }, {
-    id: 4,
-    name: 'Mike Harrington',
-    lastText: 'This is wicked good ice cream.',
-    face: 'img/mike.png'
-  }];
+/*.service('LoginService', function($q,$http, CONSTANTS, $rootScope,$httpParamSerializer,$window){
+    var email='';
+    var isAuthenticated = false;
 
-  return {
-    all: function() {
-      return chats;
-    },
-    remove: function(chat) {
-      chats.splice(chats.indexOf(chat), 1);
-    },
-    get: function(chatId) {
-      for (var i = 0; i < chats.length; i++) {
-        if (chats[i].id === parseInt(chatId)) {
-          return chats[i];
-        }
+//Login function
+    var login = function(email, password) {
+      return $q(function(resolve, reject) {
+      $http({
+      method: 'POST',
+      url: CONSTANTS.SITE_URL+"auth/?access_token=1",
+      data: $httpParamSerializer({
+          'email': email,
+          'password':password
+      }),
+      headers:{
+        'Content-Type': CONSTANTS.CONTENT_TYPE
       }
-      return null;
-    }
+    })
+        .then(
+           function(response){
+               if(response.data.status ==1){
+           // success
+            $rootScope.saveToken(response.data.data.access_token); //Saves token for access throughout app
+            $rootScope.isAuthenticated = true; //Changes value to true to avoid redirect to login
+            $rootScope.email = email; //Sets the email to user's email
+            resolve('Login success.');
+           }else{
+            //failure
+            reject('Login failed.');
+            }
+           });
+    });
   };
-});
+    
+//Save token for persisting data
+$rootScope.saveToken = function(token) {
+$rootScope.access_token= token;
+};    
+  
+//TODO: I don't think this method is being used, verify that it isn't, then delete it.
+//Retrieve token
+$rootScope.getToken = function() {
+return $rootScope.access_token;
+};
+
+return {
+    login: login,
+    isAuthenticated: function() {return isAuthenticated;},
+    email: function() {return email;}
+  };
+})*/
