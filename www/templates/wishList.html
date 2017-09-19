@@ -1,5 +1,23 @@
-<ion-view title="Wish List" id="page7" style="background-color:#4DB3D3;">
+<ion-view title="Wish List" id="wishList" style="background-color:#4DB3D3;">
   <ion-content padding="true" class="has-header">
     <button id="wishList-button5" class="button button-dark button-block">Share This List</button>
+    <p>Filter options:</p>
+    <select ng-model="filteredBrand">
+      <option value="">Brand</option>
+      <option ng-repeat="b in brands" value="{{b.brand}}">{{b.brand}}</option>
+    </select>
+    <select ng-model="filteredColor">
+      <option value="">Color</option>
+      <option ng-repeat="b in brands" value="{{b.color}}">{{b.color}}</option>
+    </select>
+    <select ng-model="filteredCollection">
+      <option value="">Collection</option>
+      <option ng-repeat="b in brands" value="{{b.collection}}">{{b.collection}}</option>
+    </select>
+    <button>Go</button>
+    <button class="button-block">Show All (May be slow)</button>
+    <div class="results">
+    <p>Placeholder for results of filtering</p>
+    </div>
   </ion-content>
 </ion-view>

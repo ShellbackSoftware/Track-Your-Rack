@@ -4,8 +4,7 @@ angular
   'ionic', 
   'app.controllers', 
   'app.directives',
-  'app.services',
-  'ionic'])
+  'app.services'])
 
 .constant('CONSTANTS',{
   'SITE_URL': 'http://shellbacksoftware.com/api/',
@@ -42,30 +41,30 @@ angular
 
   $stateProvider 
 
-      .state('home', {
+      .state('tabsController.home', {
     url: '/home',
     views: {
-      'tab1': {
+      'homeTab': {
         templateUrl: 'templates/home.html',
         controller: 'homeCtrl'
       }
     }
   })
 
-  .state('profile', {
+  .state('tabsController.profile', {
     url: '/profile',
     views: {
-      'tab2': {
+      'profileTab': {
         templateUrl: 'templates/profile.html',
         controller: 'profileCtrl'
       }
     }
   })
 
-  .state('friends', {
+  .state('tabsController.friends', {
     url: '/friends',
     views: {
-      'tab3': {
+      'friendsTab': {
         templateUrl: 'templates/friends.html',
         controller: 'friendsCtrl'
       }
@@ -78,40 +77,40 @@ angular
     abstract:true
   })
 
-  .state('chat', {
+  .state('tabsController.chat', {
     url: '/chat',
     views: {
-      'tab4': {
+      'chatTab': {
         templateUrl: 'templates/chat.html',
         controller: 'chatCtrl'
       }
     }
   })
 
-  .state('about', {
+  .state('tabsController.about', {
     url: '/about',
     views: {
-      'tab5': {
+      'aboutTab': {
         templateUrl: 'templates/about.html',
         controller: 'aboutCtrl'
       }
     }
   })
 
-  .state('wishList', {
+  .state('tabsController.wishList', {
     url: '/wishlist',
     views: {
-      'tab1': {
+      'homeTab': {
         templateUrl: 'templates/wishList.html',
         controller: 'wishListCtrl'
       }
     }
   })
 
-  .state('myRack', {
+  .state('tabsController.myRack', {
     url: '/myrack',
     views: {
-      'tab1': {
+      'homeTab': {
         templateUrl: 'templates/myRack.html',
         controller: 'myRackCtrl'
       }
@@ -122,6 +121,16 @@ angular
     url: '/scanner',
     templateUrl: 'templates/scannerPopup.html',
     controller: 'scannerPopupCtrl'
+  })
+
+  .state('tabsController.addPolish', {
+    url: '/addPolish',
+    views: {
+      'homeTab': {
+        templateUrl: 'templates/addpolish.html',
+        controller: 'addPolishCtrl'
+      }
+    }
   })
 
   .state('login', {

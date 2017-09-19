@@ -1,12 +1,23 @@
-<ion-view title="My Rack" id="page8" style="background-color:#4DB3D3;">
+<ion-view title="My Rack" id="myrack" style="background-color:#4DB3D3;" controller="myRackCtrl">
   <ion-content padding="true" class="has-header">
-    <form id="myRack-form1" class="list">
-      <label class="item item-select" id="myRack-select1">
-        <span class="input-label">Brands Owned</span>
-        <select>Cool stuff</select>
-      </label>
-    </form>
-    <p>Add color wheel for suggested colors to paint nails</p>
-    <p>Filter by collection</p>
+    <p>Not sure what color to paint your nails? Try the <button ng-click="showWheel()">Color Wheel</button></p>
+    <p>Filter options:</p>
+    <select ng-model="filteredBrand">
+      <option value="">Brand</option>
+      <option ng-repeat="b in brands" value="{{b.brand}}">{{b.brand}}</option>
+    </select>
+    <select ng-model="filteredColor">
+      <option value="">Color</option>
+      <option ng-repeat="b in brands" value="{{b.color}}">{{b.color}}</option>
+    </select>
+    <select ng-model="filteredCollection">
+      <option value="">Collection</option>
+      <option ng-repeat="b in brands" value="{{b.collection}}">{{b.collection}}</option>
+    </select>
+    <button>Go</button>
+    <button class="button-block">Show All (May be slow)</button>
+    <div class="results">
+    <p>Placeholder for results of filtering</p>
+    </div>
   </ion-content>
 </ion-view>

@@ -1,1 +1,21 @@
-/* Empty. Add your own CSS if you like */
+.addPolishContainer div{
+	width: 600px;
+	padding: 10px;
+	clear: both;
+}
+
+.addPolishContainer input{
+	width: 100%;
+	clear: both;
+}
+
+.numberBox{
+	padding: 0 5px 0 5px;
+	margin: 3px;
+	width: 50px;
+}
+
+.results{
+	border: 1px solid black; 
+	background: #D3D3D3;
+}

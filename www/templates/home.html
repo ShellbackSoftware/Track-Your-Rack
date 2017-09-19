@@ -1,9 +1,10 @@
-<ion-view title="Home" id="page2" style="background-color:#4DB3D3;">
+<ion-view title="Home" id="home" style="background-color:#4DB3D3;">
   <ion-content padding="true" class="has-header">
-  <!--<h2><p>Welcome, {{user}}!</p></h2>-->
-    <a ui-sref="tabsController.wishList()" id="home-button1" class="button button-dark button-block">Wish List</a>
-    <a ui-sref="tabsController.myRack()" id="home-button2" class="button button-dark button-block">My Rack</a>
-    <button id="home-button3" class="button button-dark button-block">Import From Website</button>
-    <button id="home-button4" class="button button-dark button-block">Barcode Scanner</button>
+  <h2><p>Welcome, [FirstName]!</p></h2>
+    <a ui-sref="tabsController.wishList()" id="toWishList" class="button button-dark button-block">Wish List</a>
+    <a ui-sref="tabsController.myRack()" id="toMyRack" class="button button-dark button-block">My Rack</a>
+    <button ui-sref="tabsController.addPolish()" id="addPolishButton" class="button button-dark button-block">Add Polish</button>
+    <button id="home-button3" class="button button-dark button-block" disabled="true">Import From Website</button>
+    <button id="home-button4" class="button button-dark button-block" disabled="true">Barcode Scanner</button>
   </ion-content>
 </ion-view>
