@@ -1,17 +1,19 @@
-<ion-view title="Profile" id="profile" style="background-color:#4DB3D3;">
+<ion-view title="Profile" id="profile" class="page" ng-controller="profileCtrl">
   <ion-content padding="true" class="has-header">
     <div id="profile-markdown1" class="show-list-numbers-and-dots">
-      <p style="color:#000000;">Profile Picture</p>
+      <p style="color:#000000;">{{avatar}}</p>
     </div>
     <div id="profile-markdown2" class="show-list-numbers-and-dots">
-      <p style="color:#000000;">FirstName LastName (centered)</p>
+      <p style="color:#000000;">{{firstName}}</p>
     </div>
     <div id="profile-markdown3" class="show-list-numbers-and-dots">
-      <p style="color:#000000;">Biography</p>
+      <p style="color:#000000;">{{bio}}</p>
     </div>
     <div id="profile-markdown4" class="show-list-numbers-and-dots">
-      <p style="color:#000000;">Ability to public/private profile; button to friend's wish list that says "check out $name's rack"</p>
+      <p style="color:#000000;">TODO: Ability to have public/private profile; button to friend's wish list that says "check out $name's rack"</p>
     </div>
+    <p>TODO: Hide button for own profile</p>
+    <button id="viewRack" style="display:block;" class="button button-dark">View {{username}}'s Rack</button>
     <button id="profile-button6" style="text-align:left;" class="button button-dark">Follow</button>
     <button id="profile-button7" class="button button-dark">Unfollow</button>
   </ion-content>

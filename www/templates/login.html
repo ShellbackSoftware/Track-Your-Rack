@@ -1,24 +1,41 @@
-<ion-view title="Login" id="login" style="background-color:#4DB3D3;" ng-controller="loginCtrl">
+<ion-view title="Login" id="login" class="page" ng-controller="loginCtrl">
     <ion-content padding="true" class="has-header has-footer">
-        <form class="list">
+       <form>
+        <h2>Welcome to Track Your Rack!</h2>
+            <div>
+                <p>Please log in to continue.</p>
+            </div>
+        <div class="list list-inset">
+          <label class="item item-input">
+              <input type="text" placeholder="Username" ng-model="data.username">
+          </label>
+          <label class="item item-input">
+              <input type="password" placeholder="Password" ng-model="data.password">
+          </label>
+      </div>
+      <button class="button button-block button-dark" ng-click="login(data)">Login</button>
+        <div style="margin-right:-20px;">
+            <a ui-sref="signup" id="Login-button22" style="left:-10px;" class="button button-dark  button-full button-clear" disabled="true">Or create an account</a>
+        </div>
+      </form>
+       <!-- <form class="list" name="form.loginForm">
             <h2>Welcome to Track Your Rack!</h2>
             <div>
                 <p>Please log in to continue.</p>
             </div>
             <ion-list>
                 <label class="item item-input">
-                    <input type="text" placeholder="E-mail" ng-model="data.email">
+                    <input type="text" name="nameField" placeholder="Username" ng-model="data.username">
                 </label>
                 <label class="item item-input">
-                    <input type="password" placeholder="Password" ng-model="data.password">
+                    <input type="password" name="passField" placeholder="Password" ng-model="data.password">
                 </label>
             </ion-list>
             <div class="spacer" style="height: 40px;"></div>
-            <button class="button button-dark  button-block" ui-sref="tabsController.home()">Log in</button>
-            <!-- <button class="button button-dark  button-block" ng-click="login(data)">Log in</button>-->
+            <button class="button button-dark  button-block" ng-click="login(data)">Log in</button>
                 <div style="margin-right:-20px;">
-                <a ui-sref="signup" id="Login-button22" style="left:-10px;" class="button button-dark  button-full button-clear">Or create an account</a>
+                <a ui-sref="signup" id="Login-button22" style="left:-10px;" class="button button-dark  button-full button-clear" disabled="true">Or create an account</a>
             </div>
-        </form>
+        </form>-->
     </ion-content>
 </ion-view>

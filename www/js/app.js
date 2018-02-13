@@ -1,23 +1,29 @@
 angular
 
 .module('app', [
-  'ionic', 
-  'app.controllers', 
+  'ionic',
+  'app.controllers',
   'app.directives',
   'app.services'])
 
 .constant('CONSTANTS',{
-  'SITE_URL': 'http://shellbacksoftware.com/api/',
-  CONTENT_TYPE: 'application/x-www-form-urlencoded; charset=UTF-8'
+  'SITE_URL': 'https://www.shellbacksoftware.com/api',
+  'BASE_URL': 'https://www.shellbacksoftware.com',
+  'IMG_SRC': 'https://www.shellbacksoftware.com/sites/default/files',
+  'CONTENT_TYPE': 'application/json',
+  'SESS_ID' : 'SESS_ID',
+  'SESS_NAME' : 'SESS_NAME',
+  'TOKEN' : 'TOKEN',
+  notAuthenticated: 'auth-not-authenticated'
 })
 
-.config(function($ionicConfigProvider, $sceDelegateProvider){
+/*.config(function($ionicConfigProvider, $sceDelegateProvider){
 
   $sceDelegateProvider.resourceUrlWhitelist([ 'self','*://www.youtube.com/**', '*://player.vimeo.com/video/**']);
 
-})
+})*/
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $rootScope, $state, AuthService, CONSTANTS) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -30,16 +36,34 @@ angular
       StatusBar.styleDefault();
     }
   });
+ $rootScope.$on('$stateChangeStart', function (event, next){
+    if (!AuthService.isAuthenticated()) {
+      if (next.name !== 'login') {
+        event.preventDefault();
+        $state.go('login');
+      }
+    }
+  })
 })
 
+// Listens for unauthorized / unauthenticated requests
+.factory('AuthInterceptor', function ($rootScope, $q, CONSTANTS) {
+  return {
+    responseError: function (response) {
+      $rootScope.$broadcast({
+        401: CONSTANTS.notAuthenticated,
+        403: CONSTANTS.notAuthorized
+      }[response.status], response);
+      return $q.reject(response);
+    }
+  };
+})
 
-.config(function($stateProvider, $urlRouterProvider) {
-// Verifies user is logged in still
-/*if(!($stateProvider.state == 'Login')){
-    $httpProvider.interceptors.push('AuthInterceptor');
-}*/
+.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
+// Pushes the interceptor
+  $httpProvider.interceptors.push('AuthInterceptor');
 
-  $stateProvider 
+  $stateProvider
 
       .state('tabsController.home', {
     url: '/home',
@@ -117,6 +141,26 @@ angular
     }
   })
 
+  .state('tabsController.browseDB', {
+    url: '/browseDB',
+    views: {
+      'homeTab': {
+        templateUrl: 'templates/browseDB.html',
+        controller: 'browseCtrl'
+      }
+    }
+  })
+
+  .state('tabsController.polish', {
+    url: '/polish',
+    views: {
+      'homeTab': {
+        templateUrl: 'templates/polish.html',
+        controller: 'polishCtrl'
+      }
+    }
+  })
+
   .state('scannerPopup', {
     url: '/scanner',
     templateUrl: 'templates/scannerPopup.html',
@@ -133,6 +177,12 @@ angular
     }
   })
 
+  .state('loading', {
+    url: '/loading',
+    templateUrl: 'templates/loading.html',
+    controller: 'loadCtrl'
+  })
+
   .state('login', {
     url: '/login',
     templateUrl: 'templates/login.html',
@@ -146,6 +196,4 @@ angular
   })
 
 $urlRouterProvider.otherwise('/login')
-
-
 });

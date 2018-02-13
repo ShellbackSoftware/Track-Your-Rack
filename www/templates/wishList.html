@@ -1,21 +1,24 @@
-<ion-view title="Wish List" id="wishList" style="background-color:#4DB3D3;">
+<ion-view title="Wish List" id="wishList" controller="wishListCtrl" ng-init="initWishList()" class="page">
   <ion-content padding="true" class="has-header">
-    <button id="wishList-button5" class="button button-dark button-block">Share This List</button>
+    <button id="wishList-button5" class="button button-dark button-block" disabled="true">Share This List</button>
+    <div>
+      <input type="textarea" placeholder="Color" class="inputBox"><button>Search</button>
+  </div>
     <p>Filter options:</p>
     <select ng-model="filteredBrand">
       <option value="">Brand</option>
-      <option ng-repeat="b in brands" value="{{b.brand}}">{{b.brand}}</option>
+      <option ng-repeat="b in wbrands | orderBy:'toString()'" ng-model="data.selectedBrand" value="{{b}}">{{b}}</option>
     </select>
     <select ng-model="filteredColor">
       <option value="">Color</option>
-      <option ng-repeat="b in brands" value="{{b.color}}">{{b.color}}</option>
+      <option ng-repeat="c in wcolors | orderBy:'toString()' " ng-model="data.selectedColor" value="{{c}}">{{c}}</option>
     </select>
     <select ng-model="filteredCollection">
       <option value="">Collection</option>
-      <option ng-repeat="b in brands" value="{{b.collection}}">{{b.collection}}</option>
+      <option ng-repeat="cln in wcollections | orderBy:'toString()' " ng-model="data.selectedCollection" value="{{cln}}">{{cln}}</option>
     </select>
-    <button>Go</button>
-    <button class="button-block">Show All (May be slow)</button>
+    <button ng-click="filter(data)">Go</button>
+    <button class="button-block" ng-click="showAll()">Show All (May be slow)</button>
     <div class="results">
     <p>Placeholder for results of filtering</p>
     </div>

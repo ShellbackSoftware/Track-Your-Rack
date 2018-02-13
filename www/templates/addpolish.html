@@ -1,19 +1,7 @@
-<ion-view title="Add A Polish" id="addPolish" style="background-color:#4DB3D3;">
+<ion-view title="Add A Polish" id="addPolish" class="page">
   <ion-content padding="true" class="has-header">
-  <div>
-    <input type="textarea" placeholder="Color" class="inputBox"><button>Search</button>
-  </div>
-  <div class="clearfix"></div>
-    <div class="results">
-      <p>Placeholder for search results</p>
-    </div>
-   <div>
-   <p><strong>FUNCTION: After a polish is selected, fill in information below that's already collected.</strong></p>
-    <p>Can't find the polish you're looking for, or want to add more information? <button ng-click="extraInfo = !extraInfo"><strong>Add one manually</strong></button></p> 
-  </div>
 
-<!-- Manually put in polish information, hidden until the button is clicked -->
-  <div ng-show="extraInfo" class="addPolishContainer">
+  <div class="addPolishContainer">
     <p>An asterisk (*) means that the field is required.</p>
       <form>
         <label for="brandbox">Brand*
@@ -21,33 +9,26 @@
       	<label for="collectionbox">Collection
         	<input type="textarea" id="collectionbox" class="inputBox"></label>
         <label for="colorbox">Color*
-          	<input type="textarea" ng-model="data.color" id="colorbox" class="inputBox"></label>
+          	<input type="textarea" ng-model="data.color" placeholder="e.g. ''" id="colorbox" class="inputBox"></label>
       	<label for="finishbox">Finish
         	<input type="textarea" ng-model="data.finish" id="finishbox" placeholder="e.g. 'creme'" class="inputBox"></label>
       	<label for="pnumbox">Polish Number
-        	<input type="textarea" ng-model="data.polishNum" id="pnumbox" class="inputBox"></label>
+        	<input type="textarea" ng-model="data.polishNum" id="pnumbox" placeholder="e.g. 'AB123'" class="inputBox"></label>
       	<label for="seasonbox">Season Released
         	<input type="textarea" ng-model="data.season" id="seasonbox" placeholder="e.g. 'Summer'" class="inputBox"></label>
       	<label for="yearbox">Year Released
-        	<input type="number" ng-model="data.year" id="yearbox" placeholder="e.g. '2004'" class="inputBox"></label>
-        <input type="checkbox" ng-click="indieSite = !indieSite" id="indieBox"><label>Indie Brand</label>
-          <label ng-show="indieSite">Brand Website<input type="textarea" placeholder="www.shellbacksoftware.com" class="inputBox"></label>
+      	<input type="number" ng-model="data.year" id="yearbox" placeholder=" e.g. '2004'" class="inputBox"></label>
+        <label for="indieBox"><input type="checkbox" ng-click="indieSite = !indieSite" name="indieBox">This is an indie brand</label>
+        <div class="clearfix"></div>
+        <label ng-show="indieSite">Brand Website<input type="textarea" placeholder="www.shellbacksoftware.com" class="inputBox"></label>
         </form>
     </div>
-<!-- End manual add stuff -->
 
     <div class="clearfix"></div>
     <input type="checkbox" ng-controller="addPolishCtrl" id="addRack"> <label>Add to My Rack</label>
     <input type="checkbox" ng-controller="addPolishCtrl" id="addWish"> <label>Add to Wish List</label>
     <div class="clearfix"></div>
-    <input type="checkbox" ng-controller="addPolishCtrl" id="forSale"> <label>For Sale</label>
-    <input type="checkbox" ng-controller="addPolishCtrl" id="condition" value="checked"> <label>This polish is unused</label>
-    <div class="clearfix"></div>
-    <p>This polish has been used
-    	<input type="number" id="timesusedbox" placeholder="0" class="numberBox"> times. </p>
-	<div class="clearfix"></div>
-	<label for="cmtbox">Comments</label><input type="textarea" id="cmtbox" class="commentsBox">
-  <div class="clearfix"></div>
+
   <button class="button button-dark">Submit</button>
   </ion-content>
 </ion-view>

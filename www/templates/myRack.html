@@ -1,23 +1,38 @@
-<ion-view title="My Rack" id="myrack" style="background-color:#4DB3D3;" controller="myRackCtrl">
+<ion-view title="My Rack" id="myrack" class="page" controller="myRackCtrl" ng-init="initRack()">
   <ion-content padding="true" class="has-header">
     <p>Not sure what color to paint your nails? Try the <button ng-click="showWheel()">Color Wheel</button></p>
+    <div>
+      <input type="textarea" placeholder="Color" class="inputBox"><button>Search</button>
+  </div>
+
+  <form name="filter-my-rack">
     <p>Filter options:</p>
-    <select ng-model="filteredBrand">
+    <select class="dropdown" ng-model="data.selectedBrand">
       <option value="">Brand</option>
-      <option ng-repeat="b in brands" value="{{b.brand}}">{{b.brand}}</option>
+      <option ng-repeat="b in mbrands | orderBy:'toString()'" value="{{b}}">{{b}}</option>
     </select>
-    <select ng-model="filteredColor">
-      <option value="">Color</option>
-      <option ng-repeat="b in brands" value="{{b.color}}">{{b.color}}</option>
-    </select>
-    <select ng-model="filteredCollection">
+    <select class="dropdown" ng-model="data.selectedCollection">
       <option value="">Collection</option>
-      <option ng-repeat="b in brands" value="{{b.collection}}">{{b.collection}}</option>
+      <option ng-repeat="cln in mcollections | orderBy:'toString()' "  value="{{cln}}">{{cln}}</option>
     </select>
-    <button>Go</button>
-    <button class="button-block">Show All (May be slow)</button>
-    <div class="results">
-    <p>Placeholder for results of filtering</p>
-    </div>
+    <button class="filter_button" ng-click="filterRack(data)">Go</button>
+    <button class="clear_button" ng-click="clear_filter" disabled="true">Clear Selection</button>
+    <button class="all_button" ng-click="fullRack()">Show All (May be slow)</button>
+  </form>
+
+  <!-- Results from filtering -->
+  <table>
+    <p ng-if="emptyResults"> No results. Check your selections!</p>
+    <tr ng-if="!emptyResults">
+      <th>Brand</th>
+      <th>Name</th>
+      <th>Collection</th>
+    </tr>
+    <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes" ng-click="openPolish(polish.node)">
+      <td>{{polish.node.Brand}}</td>
+      <td>{{polish.node.title}}</td>
+      <td>{{polish.node.Collection}}</td>
+    </tr>
+  </table>
   </ion-content>
 </ion-view>

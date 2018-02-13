@@ -1,10 +1,11 @@
-<ion-view title="Home" id="home" style="background-color:#4DB3D3;">
+<ion-view title="Home" id="home" ng-init="polishInfo()" class="page">
   <ion-content padding="true" class="has-header">
-  <h2><p>Welcome, [FirstName]!</p></h2>
-    <a ui-sref="tabsController.wishList()" id="toWishList" class="button button-dark button-block">Wish List</a>
+  <h2><p>Welcome, {{username}}!</p></h2>
     <a ui-sref="tabsController.myRack()" id="toMyRack" class="button button-dark button-block">My Rack</a>
-    <button ui-sref="tabsController.addPolish()" id="addPolishButton" class="button button-dark button-block">Add Polish</button>
-    <button id="home-button3" class="button button-dark button-block" disabled="true">Import From Website</button>
+    <a ui-sref="tabsController.wishList()" id="toWishList" class="button button-dark button-block">Wish List</a>
+    <button ui-sref="tabsController.browseDB()" id="toBrowseDB" class="button button-dark button-block">Browse Polish Database</button>
+    <button ui-sref="tabsController.addPolish()" id="addPolishButton" class="button button-dark button-block">Add Single Polish To Database</button>
+    <button id="home-button4" class="button button-dark button-block" disabled="true">Download To Local Storage</button>
     <button id="home-button4" class="button button-dark button-block" disabled="true">Barcode Scanner</button>
   </ion-content>
 </ion-view>

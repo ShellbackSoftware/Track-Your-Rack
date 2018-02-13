@@ -1,21 +1,120 @@
-.addPolishContainer div{
+.page {
+	background-color: #00cccc;
+}
+
+.addPolishContainer div {
 	width: 600px;
 	padding: 10px;
 	clear: both;
 }
 
-.addPolishContainer input{
+.spinner {
+	position: relative;
+	stroke: #103B84;
+	fill: #103B84;
+	left:50%;
+	top:50%;
+	width: 100px;
+	height: 100px;
+	margin: -50px 0 0 -50px;
+}
+/* ================= Inputs ================= */
+
+.addPolishContainer .inputBox {
 	width: 100%;
 	clear: both;
 }
 
-.numberBox{
+.dropdown {
+	width: 100%;
+	margin-top: 5px;
+	height: 30px;
+}
+
+.numberBox {
 	padding: 0 5px 0 5px;
 	margin: 3px;
 	width: 50px;
 }
 
-.results{
-	border: 1px solid black; 
-	background: #D3D3D3;
+.searchBox {
+	width: 40%;
+	margin-right: 2px;
+}
+
+/* ================= Buttons ================= */
+
+.all_button {
+	width:100%;
+	height: 30px;
+}
+
+.left_button {
+	width: 49.8%;
+	float:left;
+	margin-bottom:10px;
+	margin-top: 10px;
+	height: 30px;
+}
+
+.right_button {
+	width:49.8%;
+	float:right;
+	margin-bottom:10px;
+	height: 30px;
+	margin-top: 10px;
+}
+
+/* ================= Text ================= */
+
+.noResult {
+	text-align: center;
+	margin-top: 10px;
+}
+
+a {
+	color: white;
+}
+
+a:visited {
+	color:white;
+}
+
+/* ================= Results Table ================= */
+
+table {
+	margin-top: 10px;
+	overflow: hidden;
+	width: 100%;
+	border-radius: 15px;
+	background-color: #E3E5E8;
+}
+
+th {
+	border-bottom: 1px solid black;
+	height: 40px;
+	vertical-align: middle;
+}
+
+td {
+	text-align: center;
+	vertical-align: middle;
+	border-bottom: 1px dotted black;
+}
+
+td .flag_col{
+	text-align: center;
+	vertical-align: middle;
+	border-bottom: 1px dotted black;
+	width: 100px;
+}
+
+/* TODO: Mess with this */
+tr {
+	height: 100px;
+}
+
+.thumbnail{
+  padding: 5px; /* Some padding */
+  width: 60%; /* Set a small width */
 }
