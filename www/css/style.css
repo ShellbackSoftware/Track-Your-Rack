@@ -65,6 +65,21 @@
 	margin-top: 10px;
 }
 
+/* ================= Checkboxes ================= */
+.left_check {
+	display: inline-block;
+	float:left;
+	margin-bottom:10px;
+	margin-top: 10px;
+	height: 30px;
+}
+
+.right_check {
+	margin-bottom:10px;
+	height: 30px;
+	margin-top: 10px;
+}
+
 /* ================= Text ================= */
 
 .noResult {

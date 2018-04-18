@@ -1,31 +1,8 @@
 angular.module('app.controllers', [])
 
 // Home controller
-.controller('homeCtrl', function ($scope, $rootScope, UserService, AuthService, CONSTANTS) {
-  CONSTANTS.SESS_ID = $rootScope.user.sessid;
-  CONSTANTS.SESS_NAME = $rootScope.user.session_name;
-  CONSTANTS.TOKEN = $rootScope.user.token;
-
-  $scope.polishInfo = function () {
-    UserService.get_rack($rootScope.uid).then(function (getRackSuccess) {
-      $scope.rack = $rootScope.currentRack;
-    },
-        function (err) {
-            var alertPopup = $ionicPopup.alert({
-            title: 'Error Retrieving Your Rack.',
-            template: 'There has been an error. Please try again.'
-            });
-        });
-      UserService.get_wishlist($rootScope.uid).then(function (getWishSuccess) {
-      $scope.wish = $rootScope.currentwishList;
-    },
-        function (err) {
-            var alertPopup = $ionicPopup.alert({
-            title: 'Error Retrieving Your Wish List.',
-            template: 'There has been an error. Please try again.'
-            });
-        });
-  };
+.controller('homeCtrl', function ($scope, drupal) {
+  $scope.username = drupal.drupalUser.name;
 })
 
 // Loading screen
@@ -44,7 +21,7 @@ angular.module('app.controllers', [])
         }),
 
     UserService.get_rack($rootScope.uid).then(function (getRackSuccess) {
-      // Initialize $scope.currentRack
+      // Initialize $rootScope.currentRack
     },
         function (err) {
             var alertPopup = $ionicPopup.alert({
@@ -55,6 +32,9 @@ angular.module('app.controllers', [])
 
     UserService.get_wishlist($rootScope.uid).then(function (getWishSuccess) {
       // Initialize $scope.currentwishList
+      for(var w in $rootScope.currentWishList){
+        $rootScope.currentRack[w].node.inWish = true;
+      }
     },
         function (err) {
             var alertPopup = $ionicPopup.alert({
@@ -70,35 +50,54 @@ angular.module('app.controllers', [])
 })
 
 // Polish page controller
-.controller('polishCtrl', function ($scope, $rootScope, PolishService, CONSTANTS) {
+.controller('polishCtrl', function ($scope, $rootScope, $state, drupal, CONSTANTS) {
   $scope.targetRack = $rootScope.currentRack;
   $scope.targetWishList = $rootScope.currentwishList
 
   var curPolish = $rootScope.currentPolish;
   $scope.pName = curPolish.title;
-  $scope.pBrand = curPolish.Brand;
-  $scope.pCollection = curPolish.Collection;
-  $scope.pFinish = curPolish.Finish;
-  $scope.pYear = curPolish.Year;
-  $scope.pSeason = curPolish.Season;
-  $scope.pNumber = curPolish.Number;
-  $scope.pSite = curPolish.Site;
-  $scope.pSwatch = curPolish.Swatch.src;
+  $scope.pBrand = curPolish.field_polish_brand.und[0].value;
+  $scope.pCollection = curPolish.field_collection.und[0].value;
+  $scope.pFinish = curPolish.field_finish.und[0].value;
+  $scope.pYear = curPolish.field_release_year.und[0].value;
+  $scope.pSeason = curPolish.field_polish_season.und[0].value;
+  $scope.pNumber = curPolish.field_polish_number.und[0].value;
+  $scope.pSite = curPolish.field_polish_site.und[0].value;
+  if(curPolish.field_polish_swatch.length > 0){
+    $scope.pSwatch = curPolish.field_polish_swatch.und[0].uri;
+  }else{
+    $scope.pSwatch = CONSTANTS.IMG_SRC+"/default_images/polish_default_0.jpg";
+  }
 
   $scope.addToRack = function(){
-    console.log("Add polish " + curPolish.Nid  + " to rack.");
+    curPolish.flag_name = "my_rack";
+    curPolish.action = "flag";
+    drupal.flag_node(curPolish);
   }
 
   $scope.removeFromRack = function(){
-    console.log("Remove polish " + curPolish.Nid + " from rack.");
+    curPolish.flag_name = "my_rack";
+    curPolish.action = "unflag";
+    drupal.flag_node(curPolish);
   }
 
   $scope.addToWishList = function(){
-    console.log("Add polish " + curPolish.Nid  + " to wish list.");
+    curPolish.flag_name = "wish_list";
+    curPolish.action = "flag";
+    drupal.flag_node(curPolish);
   }
 
   $scope.removeFromWishList = function(){
-    console.log("Remove polish " + curPolish.Nid  + " from wish list.");
+    curPolish.flag_name = "wish_list";
+    curPolish.action = "unflag";
+    drupal.flag_node(curPolish);
+  }
+
+  $scope.editPolish = function(){
+    drupal.node_load(curPolish.nid).then( function (node) {
+      $rootScope.currentPolish = node; console.log(node);
+      $state.go('tabsController.addPolish');
+    })
   }
  })
 
@@ -126,7 +125,7 @@ angular.module('app.controllers', [])
 }])
 
 // Database controller
-.controller('browseCtrl', function ($scope, $rootScope, $state, $ionicPopup, UserService, PolishService) {
+.controller('browseCtrl', function ($scope, $rootScope, $state, $ionicPopup, UserService, PolishService, drupal) {
   $scope.emptyResults = true;
   $scope.cur_db_polishes = [];
   $scope.current_polish = {};
@@ -185,9 +184,10 @@ angular.module('app.controllers', [])
 }
 
 $scope.goToPolish = function(data){
-  PolishService.get_polish(data.Nid).then(function (getPolishSuccess){
-    $state.go('tabsController.polish');
-  })
+  drupal.node_load(data.Nid).then( function (node) {
+      $rootScope.currentPolish = node;
+      $state.go('tabsController.polish');
+    })
 }
 
 $scope.clear_filter = function(data){
@@ -235,7 +235,7 @@ $scope.clear_filter = function(data){
 
 
 // My Rack controller
-.controller('myRackCtrl', function ($scope, $rootScope, $ionicPopup, UserService, $filter, PolishService) {
+.controller('myRackCtrl', function ($scope, $rootScope, $ionicPopup, $state, UserService, PolishService, drupal) {
   $scope.emptyResults = true;
 
 // Fill in the filters
@@ -295,7 +295,8 @@ $scope.filterRack = function(data){
   };
 
   $scope.openPolish = function(data){
-    PolishService.get_polish(data.Nid).then(function (getPolishSuccess){
+  drupal.node_load(data.Nid).then( function (node) { //console.log(node);
+      $rootScope.currentPolish = node;
       $state.go('tabsController.polish');
     })
   }
@@ -308,61 +309,104 @@ $scope.filterRack = function(data){
 }])
 
 // Add polish to database controller
-.controller('addPolishCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
-    $scope.changePolish = function(){
-    PolishService.update_polish(CONSTANTS.SESS_ID, CONSTANTS.CESS_NAME, CONSTANTS.TOKEN, $scope.t_color, $scope.t_brand, $scope.t_collection, $scope.t_number, $scope.t_finish, $scope.t_season, $scope.t_year, $scope.t_site, $scope.t_swatch).then(function (updateSuccess){
-      // Update the polish
-          },
-        function (err) {
-            var alertPopup = $ionicPopup.alert({
-            title: 'Error Updating Polish.',
-            template: 'There has been an error. Please try again.'
-            });
-    })
+.controller('addPolishCtrl', function ($scope, $rootScope, $stateParams, PolishService, CONSTANTS, $state, drupal) {
+  $scope.new = { };
+  if($rootScope.currentPolish){
+    var curPolish = $rootScope.currentPolish;
+    $scope.new.pName = curPolish.title;
   }
-}])
 
-// Authorization controller
-.controller('authCtrl', function($scope, $state, $ionicPopup, AuthService, CONSTANTS) {
-  $scope.username = AuthService.username();
+  $scope.fill = function(){
+    $scope.new.pNid = curPolish.nid;
+    $scope.new.pBrand = curPolish.field_polish_brand.und[0].value;
+    $scope.new.pCollection = curPolish.field_collection.und[0].value;
+    $scope.new.pFinish = curPolish.field_finish.und[0].value;
+    $scope.new.pYear = curPolish.field_release_year.und[0].value;
+    $scope.new.pSeason = curPolish.field_polish_season.und[0].value;
+    $scope.new.pNumber = curPolish.field_polish_number.und[0].value;
+    $scope.new.pSite = curPolish.field_polish_site.und[0].value;
+    if(curPolish.field_polish_swatch.length > 0){
+      $scope.new.pSwatch = curPolish.field_polish_swatch.und[0].uri;
+    }else{
+      $scope.new.pSwatch = CONSTANTS.IMG_SRC+"/default_images/polish_default_0.jpg";
+    }
+  }
 
-  $scope.$on(CONSTANTS.notAuthenticated, function(event) {
-    AuthService.logout();
-    $state.go('login');
-    var alertPopup = $ionicPopup.alert({
-      title: 'Session Lost!',
-      template: 'Sorry, You have to login again.'
-    });
-  });
+    $scope.editPolish = function(polish){
+      $scope.curPolish = angular.copy(polish);
+      var node = {
+        nid: $scope.curPolish.pNid,
+        title: $scope.curPolish.pName,
+        language: 'und',
+        body: {
+          und: [{ field_collection: $scope.curPolish.pCollection,
+                  field_finish: $scope.curPolish.pFinish,
+                  field_polish_brand: $scope.curPolish.pBrand,
+                  field_polish_number: $scope.curPolish.pNumber,
+                  field_polish_season: $scope.curPolish.pSeason,
+                  field_polish_site: $scope.curPolish.pSite,
+                  field_polish_swatch: $scope.curPolish.pSwatch,
+                  field_release_year: $scope.curPolish.pYear
+          }]
+        }
+      };
+      drupal.node_save(node).then(function(data) {
+        // Polish updated, go back to home page.
+        $state.go('tabsController.home', {}, {reload: true});
+      });
+    }
 
-  $scope.setCurrentUsername = function(name) {
-    $scope.username = name;
-  };
+  $scope.createPolish = function(polish){
+      $scope.curPolish = angular.copy(polish);
+      var node = {
+        type: 'polish',
+        title: $scope.curPolish.pName,
+        language: 'und',
+        body: {
+          und: [{ field_collection: $scope.curPolish.pCollection,
+                  field_finish: $scope.curPolish.pFinish,
+                  field_polish_brand: $scope.curPolish.pBrand,
+                  field_polish_number: $scope.curPolish.pNumber,
+                  field_polish_season: $scope.curPolish.pSeason,
+                  field_polish_site: $scope.curPolish.pSite,
+                  field_polish_swatch: $scope.curPolish.pSwatch,
+                  field_release_year: $scope.curPolish.pYear
+          }]
+        }
+      };
+      drupal.node_save(node).then(function(data) {
+        // Polish created, go back to home page.
+        $state.go('tabsController.home', {}, {reload: true});
+      });
+    }
 })
 
 // Login controller
-.controller('loginCtrl', function ($scope, $rootScope,$ionicPopup, AuthService, UserService, $state, $ionicLoading) {
+.controller('loginCtrl', function ($scope, $rootScope,$ionicPopup, $state, $ionicLoading, drupal) {
 $scope.data = {};
 
   $scope.login = function(data) {
-    AuthService.login(data.username, data.password).then(function(isAuthenticated) {
-      $state.go('loading', {}, {reload: true});
-      $scope.setCurrentUsername(data.username);
-    }, function(err) {
-      var alertPopup = $ionicPopup.alert({
-        title: 'Login failed!',
-        template: 'Please check your credentials!'
-      });
+    drupal.user_login(data.username, data.password).then(function(result) {
+      if (result) {
+        $rootScope.uid = drupal.drupalUser.uid;
+        $state.go('loading', {}, {reload: true});
+      }
+      else{
+        var alertPopup = $ionicPopup.alert({
+          title: 'Login failed!',
+          template: 'Please check your credentials!'
+        });
+      }
     });
   };
 })
 
 // Logout controller
-.controller('logoutCtrl', function ($scope, $rootScope, $state, AuthService, $window) {
-  $scope.logout = function(){
-    AuthService.logout();
-   $state.go('login');
-   $window.location.reload();
+.controller('logoutCtrl', function ($scope, $rootScope, $state, $window, drupal) {
+    $scope.logout = function() {
+      drupal.user_logout();
+      $state.go('login', {}, {reload: true});
+      $window.location.reload();
   };
 })
 
@@ -374,7 +418,10 @@ $scope.data = { };
   $scope.signup = function (data) {
  LoginService.signup(data.username,data.password).then(function (success) {
       //$state.go('tabsController.home', {}, {reload: true});
-      $rootScope.username = data.username;
+    var alertPopup = $ionicPopup.alert({
+      title: 'Thank You For Registering!',
+      template: 'Please check the email you provided for further instructions on how to activate your account!'
+    });
     },
         function (err) {
             var alertPopup = $ionicPopup.alert({

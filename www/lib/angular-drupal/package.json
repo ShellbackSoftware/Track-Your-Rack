@@ -1,0 +1,64 @@
+{
+  "_from": "angular-drupal",
+  "_id": "angular-drupal@0.0.6",
+  "_inBundle": false,
+  "_integrity": "sha1-LSBenpzXyGrq9qMXFL9JwPow4AI=",
+  "_location": "/angular-drupal",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "angular-drupal",
+    "name": "angular-drupal",
+    "escapedName": "angular-drupal",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/angular-drupal/-/angular-drupal-0.0.6.tgz",
+  "_shasum": "2d205e9e9cd7c86aeaf6a31714bf49c0fa30e002",
+  "_spec": "angular-drupal",
+  "_where": "/Users/mhofstetter13/trackyourrack/www/lib",
+  "author": {
+    "name": "Tyler Frankenstein",
+    "email": "tyler.frankenstein@gmail.com",
+    "url": "http://tylerfrankenstein.com/"
+  },
+  "bugs": {
+    "url": "https://github.com/easystreet3/angular-drupal/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "An Angular JS module for Drupal 7.",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.11.2",
+    "grunt-contrib-nodeunit": "^0.4.1",
+    "grunt-contrib-uglify": "^0.9.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.12.36",
+    "karma-chrome-launcher": "^0.1.12",
+    "karma-jasmine": "^0.3.5"
+  },
+  "homepage": "https://github.com/easystreet3/angular-drupal",
+  "keywords": [
+    "angular",
+    "drupal"
+  ],
+  "license": "GNU",
+  "main": "index.js",
+  "name": "angular-drupal",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/easystreet3/angular-drupal.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.0.6"
+}

@@ -2,6 +2,7 @@ angular
 
 .module('app', [
   'ionic',
+  'angular-drupal',
   'app.controllers',
   'app.directives',
   'app.services'])
@@ -13,8 +14,7 @@ angular
   'CONTENT_TYPE': 'application/json',
   'SESS_ID' : 'SESS_ID',
   'SESS_NAME' : 'SESS_NAME',
-  'TOKEN' : 'TOKEN',
-  notAuthenticated: 'auth-not-authenticated'
+  'TOKEN' : 'TOKEN'
 })
 
 /*.config(function($ionicConfigProvider, $sceDelegateProvider){
@@ -23,7 +23,7 @@ angular
 
 })*/
 
-.run(function($ionicPlatform, $rootScope, $state, AuthService, CONSTANTS) {
+.run(function($ionicPlatform, $rootScope, $state, CONSTANTS) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -36,33 +36,9 @@ angular
       StatusBar.styleDefault();
     }
   });
- $rootScope.$on('$stateChangeStart', function (event, next){
-    if (!AuthService.isAuthenticated()) {
-      if (next.name !== 'login') {
-        event.preventDefault();
-        $state.go('login');
-      }
-    }
-  })
-})
-
-// Listens for unauthorized / unauthenticated requests
-.factory('AuthInterceptor', function ($rootScope, $q, CONSTANTS) {
-  return {
-    responseError: function (response) {
-      $rootScope.$broadcast({
-        401: CONSTANTS.notAuthenticated,
-        403: CONSTANTS.notAuthorized
-      }[response.status], response);
-      return $q.reject(response);
-    }
-  };
 })
 
 .config(function($stateProvider, $urlRouterProvider, $httpProvider) {
-// Pushes the interceptor
-  $httpProvider.interceptors.push('AuthInterceptor');
-
   $stateProvider
 
       .state('tabsController.home', {

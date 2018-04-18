@@ -1,6 +1,6 @@
 <ion-view title="{{pName}}" class="page" ng-controller="polishCtrl" ng-init="getPolish()">
     <ion-content padding="true" class="has-header has-footer">
-        <img ng-src="{{pSwatch}}" ng-if="pSwatch"/>
+        <img ng-src="{{pSwatch}}"/>
         <p>Color: {{pName}} </p>
         <p ng-if="pBrand">Brand: {{pBrand}} </p>
         <p ng-if="pCollection">Collection: {{pCollection}}</p>
@@ -9,10 +9,10 @@
         <p ng-if="pSeason">Release Season: {{pSeason}} </p>
         <p ng-if="pYear">Release Year: {{pYear}} </p>
         <p ng-if="pSite">Site: <a href="{{pSite}}">{{pSite}} </a> </p>
-        <button class="left_button" ng-show="targetRack.indexOf(polish.node.title) !== -1" ng-click="removeFromRack()">Remove From Rack</button>
-        <button class="left_button" ng-show="targetRack.indexOf(polish.node.title) === -1" ng-click="addToRack()">Add To Rack</button>
+        <button class="left_button" ng-show="targetRack.indexOf(pName) !== -1" ng-click="removeFromRack()">Remove From Rack</button>
+        <button class="left_button" ng-show="targetRack.indexOf(pName) === -1" ng-click="addToRack()">Add To Rack</button>
         <button class="right_button" ng-show="targetWishList.indexOf(polish.node.title) !== -1" ng-click="removeFromWishList()">Remove From Wish List</button>
         <button class="right_button" ng-show="targetWishList.indexOf(polish.node.title) === -1" ng-click="addToWishList()">Add To Wish List</button>
-        <p><strong>TODO: Add "Edit Polish" button</strong></p>
+        <button ng-click="editPolish()">Edit Polish</button>
     </ion-content>
 </ion-view>

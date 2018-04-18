@@ -9,6 +9,7 @@
         "gulp-sass": "^3.1.0"
     },
     "dependencies": {
+        "angular-drupal": "0.0.6",
         "cordova-android": "^6.2.3",
         "cordova-ios": "^4.4.0",
         "cordova-plugin-console": "^1.0.5",
