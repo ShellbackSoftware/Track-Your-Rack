@@ -5,7 +5,7 @@
       <input type="textarea" placeholder="Brand, color, or collection" class="searchBox" ng-model="data.searchTerm"><button class="search_button" ng-click="searchDB(data)" disabled="true">Search</button>
   </div>
   <br/>
-<form controller="loadCtrl">
+<form name="form.database">
   Filter options:
     <select class="dropdown" ng-model="data.selectedBrand">
       <option value="">Brand</option>
@@ -32,11 +32,11 @@
         <th>Brand</th>
         <th>Collection</th>
       </tr>
-      <tr ng-if="!emptyResults" ng-repeat="polish in cur_db_polishes track by $index" ng-click="goToPolish(polish.node)">
-        <td><img class="thumbnail" src="{{polish.node.Swatch.src}}"/></td>
-        <td>{{polish.node.title}}</td>
-        <td>{{polish.node.Brand}}</td>
-        <td>{{polish.node.Collection}}</td>
+      <tr ng-if="!emptyResults" ng-repeat="polish in cur_db_polishes track by $index" ng-click="goToPolish(polish)">
+        <td><img class="thumbnail" src="{{polish.Swatch.src}}"/></td>
+        <td>{{polish.title}}</td>
+        <td>{{polish.Brand}}</td>
+        <td>{{polish.Collection}}</td>
       </tr>
     </table>
   </ion-content>

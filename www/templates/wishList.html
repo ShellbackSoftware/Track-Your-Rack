@@ -1,26 +1,41 @@
-<ion-view title="Wish List" id="wishList" controller="wishListCtrl" ng-init="initWishList()" class="page">
+<ion-view title="Wish List" id="wishList" controller="wishListCtrl" ng-init="initWish()" class="page">
   <ion-content padding="true" class="has-header">
     <button id="wishList-button5" class="button button-dark button-block" disabled="true">Share This List</button>
-    <div>
-      <input type="textarea" placeholder="Color" class="inputBox"><button>Search</button>
+   <div>
+      <input type="textarea" placeholder="Color" class="inputBox"><button disabled="true">Search</button>
   </div>
+
+  <form name="form.wishList">
     <p>Filter options:</p>
-    <select ng-model="filteredBrand">
+    <select class="dropdown" ng-model="data.selectedBrand">
       <option value="">Brand</option>
-      <option ng-repeat="b in wbrands | orderBy:'toString()'" ng-model="data.selectedBrand" value="{{b}}">{{b}}</option>
+      <option ng-repeat="b in wbrands | orderBy:'toString()'" value="{{b}}">{{b}}</option>
     </select>
-    <select ng-model="filteredColor">
-      <option value="">Color</option>
-      <option ng-repeat="c in wcolors | orderBy:'toString()' " ng-model="data.selectedColor" value="{{c}}">{{c}}</option>
-    </select>
-    <select ng-model="filteredCollection">
+    <select class="dropdown" ng-model="data.selectedCollection">
       <option value="">Collection</option>
-      <option ng-repeat="cln in wcollections | orderBy:'toString()' " ng-model="data.selectedCollection" value="{{cln}}">{{cln}}</option>
+      <option ng-repeat="cln in wcollections | orderBy:'toString()' "  value="{{cln}}">{{cln}}</option>
     </select>
-    <button ng-click="filter(data)">Go</button>
-    <button class="button-block" ng-click="showAll()">Show All (May be slow)</button>
-    <div class="results">
-    <p>Placeholder for results of filtering</p>
-    </div>
+    <button class="left_button" ng-click="filterWish(data)">Go</button>
+    <button class="right_button" ng-click="reset_form()">Reset Selection</button>
+    <button class="all_button" ng-click="fullWish()">Show All (May be slow)</button>
+  </form>
+
+  <!-- Results from filtering -->
+  <table>
+    <p ng-if="emptyResults"> No results. Check your selections!</p>
+    <tr ng-if="!emptyResults">
+        <th>Swatch</th>
+        <th>Name</th>
+        <th>Brand</th>
+        <th>Collection</th>
+    </tr>
+    <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes" ng-click="openPolish(polish.node)">
+        <td><img class="thumbnail" src="{{polish.node.Swatch.src}}"/></td>
+        <td>{{polish.title}}</td>
+        <td>{{polish.Brand}}</td>
+        <td>{{polish.Collection}}</td>
+    </tr>
+  </table>
   </ion-content>
 </ion-view>
+

@@ -3,6 +3,7 @@ angular
 .module('app', [
   'ionic',
   'angular-drupal',
+  'ngCookies',
   'app.controllers',
   'app.directives',
   'app.services'])

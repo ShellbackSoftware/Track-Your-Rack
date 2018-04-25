@@ -18,6 +18,7 @@
 	height: 100px;
 	margin: -50px 0 0 -50px;
 }
+
 /* ================= Inputs ================= */
 
 .addPolishContainer .inputBox {
@@ -112,16 +113,10 @@ th {
 }
 
 td {
+	word-break:break-all;
 	text-align: center;
 	vertical-align: middle;
 	border-bottom: 1px dotted black;
-}
-
-td .flag_col{
-	text-align: center;
-	vertical-align: middle;
-	border-bottom: 1px dotted black;
-	width: 100px;
 }
 
 /* TODO: Mess with this */

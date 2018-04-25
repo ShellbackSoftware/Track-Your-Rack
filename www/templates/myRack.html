@@ -1,11 +1,11 @@
 <ion-view title="My Rack" id="myrack" class="page" controller="myRackCtrl" ng-init="initRack()">
   <ion-content padding="true" class="has-header">
-    <p>Not sure what color to paint your nails? Try the <button ng-click="showWheel()">Color Wheel</button></p>
+    <p>Not sure what color to paint your nails? <button ng-click="showWheel()" disabled="true">Try Your Luck!</button></p>
     <div>
-      <input type="textarea" placeholder="Color" class="inputBox"><button>Search</button>
+      <input type="textarea" placeholder="Color" class="inputBox"><button disabled="true">Search</button>
   </div>
 
-  <form name="filter-my-rack">
+  <form name="form.myRack">
     <p>Filter options:</p>
     <select class="dropdown" ng-model="data.selectedBrand">
       <option value="">Brand</option>
@@ -15,8 +15,8 @@
       <option value="">Collection</option>
       <option ng-repeat="cln in mcollections | orderBy:'toString()' "  value="{{cln}}">{{cln}}</option>
     </select>
-    <button class="filter_button" ng-click="filterRack(data)">Go</button>
-    <button class="clear_button" ng-click="clear_filter" disabled="true">Clear Selection</button>
+    <button class="left_button" ng-click="filterRack(data)">Go</button>
+    <button class="right_button" ng-click="reset_form()">Reset Selection</button>
     <button class="all_button" ng-click="fullRack()">Show All (May be slow)</button>
   </form>
 
@@ -24,14 +24,16 @@
   <table>
     <p ng-if="emptyResults"> No results. Check your selections!</p>
     <tr ng-if="!emptyResults">
-      <th>Brand</th>
-      <th>Name</th>
-      <th>Collection</th>
+        <th>Swatch</th>
+        <th>Name</th>
+        <th>Brand</th>
+        <th>Collection</th>
     </tr>
-    <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes" ng-click="openPolish(polish.node)">
-      <td>{{polish.node.Brand}}</td>
-      <td>{{polish.node.title}}</td>
-      <td>{{polish.node.Collection}}</td>
+    <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes" ng-click="openPolish(polish)">
+        <td><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
+        <td>{{polish.title}}</td>
+        <td>{{polish.Brand}}</td>
+        <td>{{polish.Collection}}</td>
     </tr>
   </table>
   </ion-content>

@@ -1,6 +1,6 @@
 <ion-view title="Login" id="login" class="page" ng-controller="loginCtrl">
-    <ion-content padding="true" class="has-header has-footer">
-       <form>
+    <ion-content padding="true" class="has-header has-footer" ng-init="reset_form()">
+       <form name="form.login">
         <h2>Welcome to Track Your Rack!</h2>
             <div>
                 <p>Please log in to continue.</p>

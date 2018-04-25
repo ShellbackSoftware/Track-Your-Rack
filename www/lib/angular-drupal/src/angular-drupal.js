@@ -103,7 +103,9 @@ function drupal($http, $q, drupalSettings, drupalToken) {
   // USER LOGOUT
   this.user_logout = function() {
     var drupal = this;
-    return this.token().then(function(token) {
+    drupal.drupalUser = drupal_user_defaults();
+    drupal.drupalToken = null;
+    /*return this.token().then(function(token) {
         return $http({
             method: 'POST',
             url: restPath + '/user/logout.json',
@@ -112,11 +114,11 @@ function drupal($http, $q, drupalSettings, drupalToken) {
           /*if (typeof drupalToken !== 'undefined') {
             drupalToken = null;
           }*/
-          this.drupal.drupalUser = drupal_user_defaults();
+          /*this.drupal.drupalUser = drupal_user_defaults();
           this.drupal.drupalToken = null;
           return drupal.connect();
         });
-    });
+    });*/
   };
 
   // USER REGISTER
@@ -179,37 +181,18 @@ function drupal($http, $q, drupalSettings, drupalToken) {
   };
 
 
-  // FLAGS
-
-  // TEST IF FLAGGED
-  this.node_flagged = function(node) {
-    var options = {
-      method: 'POST',
-      url: this.restPath + '/flag/countall.json',
-      headers: { 'Content-Type': 'application/json',
-                  'Authentication': this.Cookie },
-      data: { node: node } // wrap nodes
-    };
-    return this.token().then(function(token) {
-        options.headers['X-CSRF-Token'] = token;
-        return $http(options).then(function(result) {
-            if (result.status == 200) { return result.data; }
-        });
-    });
-  };
-
   // FLAG NODE
-  this.flag_node = function(node) { console.log(node);
+  this.flag_node = function(node, cookie) {
     var options = {
       method: 'POST',
       url: this.restPath + '/flag/flag.json',
       headers: { 'Content-Type': 'application/json',
-                  'Authentication': this.Cookie },
+                  'Authentication': cookie },
       data: { node: node,
-              flag_name: node.flag_name,
-              action: node.action,
-              entity_id: node.nid
-            } // wrap nodes
+              'flag_name': node.flag_name,
+              'action': node.action,
+              'entity_id': node.nid
+            }
     };
     return this.token().then(function(token) {
         options.headers['X-CSRF-Token'] = token;
@@ -499,10 +482,9 @@ function drupal($http, $q, drupalSettings, drupalToken) {
 
   // VIEWS
   this.views_json = function(path) {
-    var views_json_path = this.sitePath + '/' + path;
+    var views_json_path = this.restPath + '/' + path;
     return $http.get(views_json_path).then(function(result) {
       if (result.status == 200) {
-
         // If the "view" object is attached to the result data, then we can
         // intelligently parse the results and return an easy to use array of
         // row results to the caller.
