@@ -1,4 +1,4 @@
-<ion-view title="{{pName}}" class="page" ng-controller="polishCtrl">
+<ion-view title="{{pName}}" class="page">
     <ion-content padding="true" class="has-header has-footer">
         <img ng-src="{{curPolish.Swatch.src}}"/>
         <p>Color: {{curPolish.title}} </p>
@@ -13,6 +13,6 @@
         <button class="left_button" ng-show="!inRack" ng-click="addToRack()">Add To Rack</button>
         <button class="right_button" ng-show="inWishList" ng-click="removeFromWishList()">Remove From Wish List</button>
         <button class="right_button" ng-show="!inWishList" ng-click="addToWishList()">Add To Wish List</button>
-        <button ng-click="editPolish()">Edit Polish</button>
+        <button ng-click="updatePolish()">Edit Polish</button>
     </ion-content>
 </ion-view>

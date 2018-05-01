@@ -1,4 +1,4 @@
-<ion-view title="Login" id="login" class="page" ng-controller="loginCtrl">
+<ion-view title="Login" id="login" class="page">
     <ion-content padding="true" class="has-header has-footer" ng-init="reset_form()">
        <form name="form.login">
         <h2>Welcome to Track Your Rack!</h2>
@@ -17,6 +17,13 @@
         <div style="margin-right:-20px;">
             <a ui-sref="signup" id="Login-button22" style="left:-10px;" class="button button-dark  button-full button-clear" disabled="true">Or create an account</a>
         </div>
-      </form>
+      </form><!--
+      <form ng-submit="test(img)">
+        <label for="swatchbox">Upload Swatch</label>
+        <input type="file" ng-model="img.file" name="file" base-sixty-four-input accept="image/*">
+        <input type="textarea" ng-model="img.file.filename" class="inputBox">
+        <button class="button button-dark">Submit</button>
+      </form>-->
     </ion-content>
+    <p class="version-number">Version 0.1</p>
 </ion-view>

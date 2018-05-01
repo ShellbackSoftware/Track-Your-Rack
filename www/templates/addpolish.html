@@ -1,7 +1,7 @@
-<ion-view title="Add A Polish" id="addPolish" class="page" ng-controller="addPolishCtrl">
+<ion-view title="Add A Polish" id="addPolish" class="page">
   <ion-content padding="true" class="has-header">
-
-  <div class="addPolishContainer" ng-if="new.pName" ng-init="fill()">
+ <p><strong>TODO:</strong> Add way for users to select a brand already in the system.</p>
+<!--  <div class="addPolishContainer" ng-if="new.pName" ng-init="fill()">
       <form ng-submit="editPolish(new)">
         <label for="colorbox">Color <strong>REQUIRED</strong>
           <input type="textarea" ng-model="new.pName" placeholder="e.g. 'Wish on a Starfish'" id="colorbox" class="inputBox"></label>
@@ -20,19 +20,13 @@
         <label for="indieBox"><input type="checkbox" ng-click="indieSite = !indieSite" name="indieBox">This is an indie brand</label>
         <div class="clearfix"></div>
         <label ng-show="indieSite">Brand Website<input type="textarea" placeholder="www.shellbacksoftware.com" class="inputBox" ng-model="new.pSite"></label>
-        <label for="swatchbox">Swatch
-        <input type="textarea" ng-model="pSwatch" id="swatchbox" placeholder=" Select a file to upload." class="inputBox"></label>
-        <div class="clearfix"></div>
-        <label for="rackCheck">
-          <input class="left_check" type="checkbox" ng-model="new.addToRack" id="rackCheck">I have this polish.</input></label>
-        <label for="wishCheck">
-          <input class="right_check" type="checkbox" ng-model="new.addToWishList" id="wishCheck">I want this polish.</input></label>
+        <input type="file" ng-model="new.pSwatch" name="file" base-sixty-four-input accept="image/*">
         <div class="clearfix"></div>
         <input type="submit" class="button button-dark" value="Submit">
         </form>
-    </div>
+    </div>-->
 
-<div class="addPolishContainer" ng-if="!new.pName">
+<div class="addPolishContainer">
       <form ng-submit="createPolish(data)">
         <label for="colorbox">Color <strong>REQUIRED</strong>
             <input type="textarea" ng-model="data.pName" placeholder="e.g. 'Wish on a Starfish'" id="colorbox" class="inputBox"></label>
@@ -43,16 +37,24 @@
         <label for="finishbox">Finish
           <input type="textarea" ng-model="data.pFinish" id="finishbox" placeholder="e.g. 'creme'" class="inputBox"></label>
         <label for="pnumbox">Polish Number
-          <input type="textarea" ng-model="data.pNum" id="pnumbox" placeholder="e.g. 'AB123'" class="inputBox"></label>
+          <input type="textarea" ng-model="data.pNumber" id="pnumbox" placeholder="e.g. 'AB123'" class="inputBox"></label>
         <label for="seasonbox">Season Released
           <input type="textarea" ng-model="data.pSeason" id="seasonbox" placeholder="e.g. 'Summer'" class="inputBox"></label>
         <label for="yearbox">Year Released
         <input type="textarea" ng-model="data.pYear" id="yearbox" placeholder=" e.g. '2004'" class="inputBox"></label>
+
         <label for="indieBox"><input type="checkbox" ng-click="indieSite = !indieSite" name="indieBox">This is an indie brand</label>
         <div class="clearfix"></div>
-        <label ng-show="indieSite">Brand Website<input type="textarea" placeholder="www.shellbacksoftware.com" class="inputBox" ng-model="data.pWebsite"></label>
-        <label for="swatchbox">Swatch
-        <input type="textarea" ng-model="data.pSwatch" id="swatchbox" placeholder=" Select a file to upload." class="inputBox"></label>
+        <label ng-show="indieSite" class="toggleBox">Brand Website<input type="textarea" placeholder="www.shellbacksoftware.com" class="inputBox" ng-model="data.pWebsite"></label>
+
+
+        <label for="swatchbox"><input type="checkbox" ng-click="newFile = !newFile">I'd like to upload a swatch</label>
+        <div class="clearfix"></div>
+        <div ng-show="newFile" class="toggleBox">
+          <input type="file" ng-model="data.pSwatch" name="swatchbox" base-sixty-four-input accept="image/*">
+          File Name (You can change it if you like!)<input type="textarea" ng-model="data.pSwatch.filename" class="inputBox">
+        </div>
+
         <div class="clearfix"></div>
         <label for="rackCheck">
           <input class="left_check" type="checkbox" ng-model="data.addToRack" id="rackCheck">I have this polish.</input></label>
@@ -62,12 +64,5 @@
         <button class="button button-dark">Submit</button>
         </form>
     </div>
-
-   <!-- <div class="clearfix"></div>
-      <button class="left_button" ng-show="targetRack.indexOf(polish.node.title) !== -1" ng-click="removeFromRack()">Remove From Rack</button>
-      <button class="left_button" ng-show="targetRack.indexOf(polish.node.title) === -1" ng-click="addToRack()">Add To Rack</button>
-      <button class="right_button" ng-show="targetWishList.indexOf(polish.node.title) !== -1" ng-click="removeFromWishList()">Remove From Wish List</button>
-      <button class="right_button" ng-show="targetWishList.indexOf(polish.node.title) === -1" ng-click="addToWishList()">Add To Wish List</button>
-    <div class="clearfix"></div>-->
   </ion-content>
 </ion-view>

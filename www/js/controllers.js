@@ -8,7 +8,7 @@ angular.module('app.controllers', [])
 // Loading screen
 .controller('loadCtrl', function ($scope,$state, $q, drupal, $cookies){
 
-  $scope.initialize = function () {
+  //$scope.initialize = function () {
     $q.all([
       drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
         $cookies.myRack = nodes;
@@ -23,14 +23,14 @@ angular.module('app.controllers', [])
       $state.go('tabsController.home', {}, {reload: true});
     })
 
-  }
+ // }
 })
 
 // Polish page controller
-.controller('polishCtrl', function ($scope, $state, drupal, CONSTANTS, $filter, UserService, $cookies, $q, $ionicPopup) {
+.controller('polishCtrl', function ($scope, $state, drupal, $cookies, $q, $ionicPopup, $filter, PolishService) {
   $scope.inRack = false;
+  $scope.inWishList = false;
   $scope.curPolish = $cookies.currentPolish;
-  $scope.curPolish.updatingRack = false;
   var loadPopup = null;
 
   var pIndex = 0;
@@ -42,94 +42,56 @@ angular.module('app.controllers', [])
     $scope.inRack = true;
   }
 
+  var finWishList = $cookies.myWishList.filter(function(p) {
+    return p.title === $scope.curPolish.title;
+  });
+
+  if(finWishList.length > 0){
+    $scope.inWishList = true;
+  }
+
   $scope.showAlert = function() {
-    loadPopup = $ionicPopup.alert({
+    loadPopup = $ionicPopup.show({
        title: 'Updating',
        template: 'Please wait one moment, we\'re updating your list! <br/> <ion-spinner align="center"></ion-spinner>',
        buttons: null
     });
   }
 
-  $scope.addToRack = function(){
-    $scope.curPolish.flag_name = "my_rack";
-    $scope.curPolish.action = "flag";
-
-    //Open popup
+  $scope.addToRack = function (){
     $scope.showAlert();
-    $q.all([
-      drupal.flag_node($scope.curPolish, $cookies.get("Cookie")).then(function(result) {
-        // Flag complete
-      }),
-      drupal.views_json("polish/" + $scope.curPolish.nid).then(function(node) {
-          $cookies.myRack.push(angular.copy(node[0]));
-          $scope.inRack = true;
-        })
-      ]).then(function(results) {
-        //Close popup
-        loadPopup.close();
-        //$state.go($state.current, {}, {reload: true});
+    PolishService.addRack($cookies.currentPolish).then( function(result){
+      $scope.inRack = true;
+      loadPopup.close();
     })
   }
 
-  $scope.removeFromRack = function(){
-    $scope.curPolish.flag_name = "my_rack";
-    $scope.curPolish.action = "unflag";
-
-    // Open popup
+  $scope.addToWishList = function() {
     $scope.showAlert();
-      drupal.flag_node($scope.curPolish, $cookies.get("Cookie")).then(function(result) {
-        // Flag complete
-        $scope.inRack = false;
-        pIndex = $cookies.myRack.findIndex(x=>x.title === $scope.curPolish.title);
-        $cookies.myRack.splice(pIndex);
-        // Close popup
-        loadPopup.close();
-        //$state.go($state.current, {}, {reload: true});
-      })
-  }
-
-  $scope.addToWishList = function(){
-    curPolish.flag_name = "wish_list";
-    curPolish.action = "flag";
-    //Open popup
-    $scope.showAlert();
-    $q.all([
-      drupal.flag_node($scope.curPolish, $cookies.get("Cookie")).then(function(result) {
-        // Flag complete
-      }),
-      drupal.views_json("polish/" + $scope.curPolish.nid).then(function(node) {
-          $cookies.myWishList.push(angular.copy(node[0]));
-          $scope.inWishList = true;
-        })
-      ]).then(function(results) {
-        //Close popup
-        loadPopup.close();
-        //$state.go($state.current, {}, {reload: true});
+    PolishService.addWishList($cookies.currentPolish).then( function(result){
+      $scope.inWishList = true;
+      loadPopup.close();
     })
   }
 
-  $scope.removeFromWishList = function(){
-    curPolish.flag_name = "wish_list";
-    curPolish.action = "unflag";
-
-    // Open popup
+  $scope.removeFromRack = function() {
     $scope.showAlert();
-      drupal.flag_node($scope.curPolish, $cookies.get("Cookie")).then(function(result) {
-        // Flag complete
-        $scope.inRack = false;
-        pIndex = $cookies.myWishList.findIndex(x=>x.title === $scope.curPolish.title);
-        $cookies.myWishList.splice(pIndex);
-        // Close popup
-        loadPopup.close();
-        //$state.go($state.current, {}, {reload: true});
-      })
+    PolishService.removeRack($cookies.currentPolish).then( function(result){
+      $scope.inRack = false;
+      loadPopup.close();
+    })
   }
 
-  $scope.editPolish = function(){
-    drupal.node_load(curPolish.nid).then( function (node) {
-      $cookies.currentPolish = node;
-      $state.go('tabsController.addPolish');
+  $scope.removeFromWishList = function() {
+    $scope.showAlert();
+    PolishService.removeWishList($cookies.currentPolish).then( function(result){
+      $scope.inWishList = false;
+      loadPopup.close();
     })
+  }
+
+  $scope.updatePolish = function( ){
+    $state.go('tabsController.addPolish');
   }
  })
 
@@ -161,21 +123,20 @@ angular.module('app.controllers', [])
   $scope.form = {};
   $scope.data = {};
   $scope.emptyResults = true;
+  $scope.bpolishes = [];
   $scope.cur_db_polishes = [];
 
-  $scope.initDB = function(){
-    $scope.bpolishes = $cookies.allPolishes;
-    $scope.bbrands = [];
-    $scope.bcollections = [];
-    $scope.bpolishes.forEach(function (polish) {
-      if($scope.bbrands.indexOf(polish.Brand) === -1 ) {
-        $scope.bbrands.push(polish.Brand);
-      }
-      if(($scope.bcollections.indexOf(polish.Collection) === -1) && polish.Collection !== "" ) {
-        $scope.bcollections.push(polish.Collection);
-      }
-    })
-  }
+  $scope.bpolishes = $cookies.allPolishes;
+  $scope.bbrands = [];
+  $scope.bcollections = [];
+  $scope.bpolishes.forEach(function (polish) {
+    if($scope.bbrands.indexOf(polish.Brand) === -1 ) {
+      $scope.bbrands.push(polish.Brand);
+    }
+    if(($scope.bcollections.indexOf(polish.Collection) === -1) && polish.Collection !== "" ) {
+      $scope.bcollections.push(polish.Collection);
+    }
+  })
 
   $scope.filter_db = function(data){
     $scope.emptyResults = false;
@@ -226,6 +187,7 @@ $scope.reset_form = function(){
     $scope.original = {};
     $scope.data = angular.copy($scope.original);
     $scope.form.database.$setPristine();
+    $scope.bpolishes = angular.copy($scope.original);
     $scope.cur_db_polishes = {};
     $scope.emptyResults = true;
   }
@@ -294,10 +256,9 @@ $scope.reset_form = function(){
   }
 
   $scope.openPolish = function(data){
-    drupal.views_json("polish/" + data.nid).then(function(node) {
-        $cookies.currentPolish = node[0];
-        $state.go('tabsController.polish');
-      })
+    SessionService.setCurrentPolish(angular.copy(data));
+    $scope.reset_form();
+    $state.go('tabsController.polish');
   }
 })
 
@@ -308,20 +269,18 @@ $scope.reset_form = function(){
   $scope.data = {};
 
   // Fill in the filters
-  $scope.initRack = function() {
-    $scope.emptyResults = true;
-    $scope.mpolishes = $cookies.myRack;
-    $scope.mbrands = [];
-    $scope.mcollections = [];
-    $scope.mpolishes.forEach(function (polish) {
-      if($scope.mbrands.indexOf(polish.Brand) === -1 ) {
-        $scope.mbrands.push(polish.Brand);
-      }
-      if(($scope.mcollections.indexOf(polish.Collection) === -1) && polish.Collection !== "" ) {
-        $scope.mcollections.push(polish.Collection);
-      }
-    })
-  }
+  $scope.emptyResults = true;
+  $scope.mpolishes = $cookies.myRack;
+  $scope.mbrands = [];
+  $scope.mcollections = [];
+  $scope.mpolishes.forEach(function (polish) {
+    if($scope.mbrands.indexOf(polish.Brand) === -1 ) {
+      $scope.mbrands.push(polish.Brand);
+    }
+    if(($scope.mcollections.indexOf(polish.Collection) === -1) && polish.Collection !== "" ) {
+      $scope.mcollections.push(polish.Collection);
+    }
+  })
 
   // Return entire rack
   $scope.fullRack = function(){
@@ -331,6 +290,7 @@ $scope.reset_form = function(){
 
   // Filter rack for output
   $scope.filterRack = function(data){
+    $scope.mpolishes = $cookies.myRack;
     $scope.emptyResults = false;
     var selbrand = false;
     var selcollection = false;
@@ -360,6 +320,7 @@ $scope.reset_form = function(){
     $scope.data = angular.copy($scope.original);
     $scope.form.myRack.$setPristine();
     $scope.fil_polishes = {};
+    $scope.mpolishes = angular.copy($scope.original);
     $scope.emptyResults = true;
   }
 
@@ -377,88 +338,192 @@ $scope.reset_form = function(){
 }])
 
 // Add polish to database controller
-.controller('addPolishCtrl', function ($scope, $stateParams, PolishService, CONSTANTS, $state, drupal, $cookies) {
-  $scope.new = { };
+.controller('addPolishCtrl', function ($scope, $stateParams, CONSTANTS, $state, drupal, $cookies, $ionicPopup, $q, PolishService) {
+  $scope.data = { };
+  loadPopup = null;
+
   if($cookies.currentPolish){
-    var curPolish = $cookies.currentPolish;
-    $scope.new.pName = curPolish.title;
+    $scope.data.pName = $cookies.currentPolish.title;
+  }
+
+  $scope.showLoading = function() {
+    loadPopup = $ionicPopup.alert({
+       title: 'Updating',
+       template: 'Please wait one moment, we\'re updating our server! <br/> <ion-spinner align="center"></ion-spinner>',
+       buttons: null
+    });
   }
 
   $scope.fill = function(){
-    $scope.new.pNid = curPolish.nid;
-    $scope.new.pBrand = curPolish.Brand.und[0].value;
-    $scope.new.pCollection = curPolish.Collection.und[0].value;
-    $scope.new.pFinish = curPolish.field_finish.und[0].value;
-    $scope.new.pYear = curPolish.field_release_year.und[0].value;
-    $scope.new.pSeason = curPolish.field_polish_season.und[0].value;
-    $scope.new.pNumber = curPolish.field_polish_number.und[0].value;
-    $scope.new.pSite = curPolish.field_polish_site.und[0].value;
-    if(curPolish.field_polish_swatch.length > 0){
-      $scope.new.pSwatch = curPolish.field_polish_swatch.und[0].uri;
-    }else{
-      $scope.new.pSwatch = CONSTANTS.IMG_SRC+"/default_images/default_polish_1.jpg";
+    $scope.data.pName = $cookies.currentPolish.title;
+    $scope.data.pBrand = $cookies.currentPolish.Brand;
+    $scope.data.pCollection = $cookies.currentPolish.Collection;
+    $scope.data.pFinish = $cookies.currentPolish.Finish;
+    $scope.data.pYear = $cookies.currentPolish.Year;
+    $scope.data.pSeason = $cookies.currentPolish.Season;
+    $scope.data.pNumber = $cookies.currentPolish.Number;
+    $scope.data.pSite = $cookies.currentPolish.Site;
+
+    var finRack = $cookies.myRack.filter(function(p) {
+      return p.title === $cookies.currentPolish.title;
+    });
+
+    if(finRack.length > 0){
+      $scope.data.addToRack = true;
+      $scope.inMyRack = true;
+    }
+
+    var finWishList = $cookies.myWishList.filter(function(p) {
+      return p.title === $cookies.currentPolish.title;
+    });
+
+    if(finWishList.length > 0){
+      $scope.inMyWishList = true;
+      $scope.data.addToWishList = true;
     }
   }
 
-    $scope.editPolish = function(polish){
-      $scope.curPolish = angular.copy(polish);
+   /* $scope.editPolish = function(polish){
+      $scope.showLoading();
       var node = {
-        nid: $scope.curPolish.pNid,
-        title: $scope.curPolish.pName,
-        language: 'und',
-        body: {
-          und: [{ Collection: $scope.curPolish.pCollection,
-                  field_finish: $scope.curPolish.pFinish,
-                  Brand: $scope.curPolish.pBrand,
-                  field_polish_number: $scope.curPolish.pNumber,
-                  field_polish_season: $scope.curPolish.pSeason,
-                  field_polish_site: $scope.curPolish.pSite,
-                  field_polish_swatch: $scope.curPolish.pSwatch,
-                  field_release_year: $scope.curPolish.pYear
-          }]
-        }
+        nid: polish.pNid,
+        title: polish.pName,
+        field_collection: { "und": [{ "value": polish.pCollection }] },
+        field_finish: { "und": [{ "value": polish.pFinish }] },
+        field_polish_brand: { "und": [{ "value": polish.pBrand }] },
+        field_polish_number: { "und": [{ "value": polish.pNumber }] },
+        field_polish_season: { "und": [{ "value": polish.pSeason }] },
+        field_polish_site: { "und": [{ "value": polish.pSite }] },
+        field_release_year: { "und": [{ "value": polish.pYear }] }
       };
-      drupal.node_save(node).then(function(data) {
-        // Polish updated, go back to home page.
-        $state.go('tabsController.home', {}, {reload: true});
+      drupal.node_save(node, $cookies.get("Cookie")).then(function(data) {
+        // Update all the lists to reflect the edited polish
+        $cookies.myRack = null;
+        $cookies.myWishList = null;
+        $cookies.allPolishes = null;
+          $q.all([
+            drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
+              $cookies.myRack = nodes;
+            }),
+            drupal.views_json("user/" + $cookies.get("uid") + "/wish-list").then(function(nodes) {
+              $cookies.myWishList = nodes;
+            }),
+            drupal.views_json("tyr/all-polish").then(function(nodes) {
+              $cookies.allPolishes = nodes;
+            })
+          ]).then(function(results) {
+            loadPopup.close();
+            $state.go('tabsController.home', {}, {reload: true});
+          })
       });
+    }*/
+
+  $scope.checkPolish = function(){
+    if($cookies.currentPolish){
+      $scope.fill();
     }
+  }
+ $scope.checkPolish();
 
   $scope.createPolish = function(polish){
-      $scope.curPolish = angular.copy(polish);
-      var node = {
-        type: 'polish',
-        title: $scope.curPolish.pName,
-        language: 'und',
-        body: {
-          und: [{ Collection: $scope.curPolish.pCollection,
-                  field_finish: $scope.curPolish.pFinish,
-                  Brand: $scope.curPolish.pBrand,
-                  field_polish_number: $scope.curPolish.pNumber,
-                  field_polish_season: $scope.curPolish.pSeason,
-                  field_polish_site: $scope.curPolish.pSite,
-                  field_polish_swatch: $scope.curPolish.pSwatch,
-                  field_release_year: $scope.curPolish.pYear
-          }]
+    $scope.showLoading();
+    var node = {
+          type: 'polish',
+          title: polish.pName,
+          field_collection: { "und": [{ "value": polish.pCollection }] },
+          field_finish: { "und": [{ "value": polish.pFinish }] },
+          field_polish_brand: { "und": [{ "value": polish.pBrand }] },
+          field_polish_number: { "und": [{ "value": polish.pNumber }] },
+          field_polish_season: { "und": [{ "value": polish.pSeason }] },
+          field_polish_site: { "und": [{ "value": polish.pSite }] },
+          field_release_year: { "und": [{ "value": polish.pYear }] },
+          field_polish_swatch: { "und": [{ "fid": "" }] }
+        };
+    var data = {};
+    var newPol = {};
+
+    if($cookies.currentPolish){
+      node.nid = $cookies.currentPolish.nid;
+    }
+
+    if(polish.pSwatch){
+        var type = polish.pSwatch.filetype.substring(polish.pSwatch.filetype.indexOf("/") + 1);
+        var name = polish.pSwatch.filename.replace(/\.[^/.]+$/, "");
+        var swatch64 = {
+          file:polish.pSwatch.base64,
+          filename:name+type,
+          filepath:"public://swatches/"+name+"."+type
         }
-      };
-      drupal.node_save(node).then(function(data) {
-        // Polish created, go back to home page.
-        $state.go('tabsController.home', {}, {reload: true});
-      });
+       var saveImage = drupal.file_save(swatch64, $cookies.get("Cookie")).then(function (f) {
+          //node.field_polish_swatch.und[0].fid = f.fid;
+          var wImage = { field_polish_swatch: { "und": [{ "fid": "241" }] } };
+          node = angular.merge(node, wImage);
+          return node;
+      })
+    }
+    saveImage
+      .then(drupal.node_save(node, $cookies.get("Cookie")).then(function(data) { console.log(node);
+        // Update all the lists to reflect the new polish
+        $cookies.myRack = null;
+        $cookies.myWishList = null;
+        $cookies.allPolishes = null;
+
+        $q.all([
+            drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
+              $cookies.myRack = nodes;
+            }),
+            drupal.views_json("user/" + $cookies.get("uid") + "/wish-list").then(function(nodes) {
+              $cookies.myWishList = nodes;
+            }),
+            drupal.views_json("tyr/all-polish").then(function(nodes) {
+              $cookies.allPolishes = nodes;
+            })
+          ]).then(function(results) {
+            drupal.views_json("polish/" + data.nid).then( function (rnode) {
+                var newNode = angular.copy(rnode[0]);
+                $cookies.allPolishes.push(newNode);
+              if(polish.addToRack && !$scope.inMyRack){
+                  PolishService.addRack(newNode).then( function(result){ })
+                }
+              if(polish.addToWishList && !$scope.inMyWishList){
+                PolishService.addWishList(newNode).then( function(result){ })
+              }
+              if(!polish.addToRack && $scope.inMyRack){
+                  PolishService.removeRack(newNode).then( function(result){ })
+                }
+              if(!polish.addToWishList && $scope.inMyWishList){
+                PolishService.removeWishList(newNode).then( function(result){ })
+              }
+            loadPopup.close();
+            $state.go('tabsController.home', {}, {reload: true});
+            });
+             // Get a new Polish object with the new data
+            /*drupal.views_json("polish/" + newPol.nid).then( function (node) {
+              var newNode = angular.copy(node[0]);
+              $cookies.allPolishes.push(newNode);
+              if(polish.addToRack && !$scope.inMyRack){ console.log("Adding to rack");
+                  PolishService.addRack(newNode).then( function(result){ })
+                }
+              if(polish.addToWishList && !$scope.inMyWishList){ console.log("Adding to wish list");
+                PolishService.addWishList(newNode).then( function(result){ })
+              }
+              if(!polish.addToRack && $scope.inMyRack){ console.log("Removing from rack");
+                  PolishService.removeRack(newNode).then( function(result){ })
+                }
+              if(!polish.addToWishList && $scope.inMyWishList){ console.log("Removing from wish list");
+                PolishService.removeWishList(newNode).then( function(result){ })
+              }
+            loadPopup.close();
+            $state.go('tabsController.home', {}, {reload: true});*/
+            })
+          })
+        )
     }
 })
 
 // Login controller
-.controller('loginCtrl', function ($scope, $ionicPopup, $state, $ionicLoading, drupal, SessionService) {
+.controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService) {
 $scope.data = {};
-$scope.form = {};
-
-$scope.reset_form = function(){
-    $scope.original = {};
-    $scope.data = angular.copy($scope.original);
-    //$scope.form.login.$setPristine();
-  }
 
 $scope.showBadInfo = function() {
     loadPopup = $ionicPopup.alert({

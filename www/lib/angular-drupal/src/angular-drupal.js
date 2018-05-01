@@ -105,6 +105,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
     var drupal = this;
     drupal.drupalUser = drupal_user_defaults();
     drupal.drupalToken = null;
+    // Commented out due to headless; left in in case I break something later
     /*return this.token().then(function(token) {
         return $http({
             method: 'POST',
@@ -231,11 +232,12 @@ function drupal($http, $q, drupalSettings, drupalToken) {
   };
 
   // FILE SAVE
-  this.file_save = function(file) {
+  this.file_save = function(file, cookie) {
     var options = {
       method: 'POST',
       url: this.restPath + '/file.json',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json',
+                  'Authentication': cookie },
       data: { file: file } // wrap files
     };
     return this.token().then(function(token) {
@@ -247,7 +249,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
   };
 
   // NODE SAVE
-  this.node_save = function(node) {
+  this.node_save = function(node, cookie) {
     var method = null;
     var url = null;
     if (!node.nid) {
@@ -262,7 +264,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
       method: method,
       url: url,
       headers: { 'Content-Type': 'application/json',
-                  'Authentication': this.Cookie },
+                  'Authentication': cookie },
       data: { node: node } // wrap nodes
     };
     return this.token().then(function(token) {
@@ -431,6 +433,24 @@ function drupal($http, $q, drupalSettings, drupalToken) {
             headers: {
               'Content-Type': 'application/json',
               'X-CSRF-Token': token
+            }
+        }).then(function(result) {
+            if (result.status == 200) { return result.data; }
+        });
+    });
+  };
+
+// FILE DELETE
+  this.file_delete = function(fid, cookie) {
+    var drupal = this;
+    return this.token().then(function(token) {
+        return $http({
+            method: 'DELETE',
+            url: drupal.restPath + '/file/' +fid + '.json',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': token,
+              'Cookie': cookie
             }
         }).then(function(result) {
             if (result.status == 200) { return result.data; }

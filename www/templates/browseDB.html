@@ -1,4 +1,4 @@
-<ion-view title="Polish Database" id="browseDB" controller="browseCtrl" class="page" ng-init="initDB()">
+<ion-view title="Polish Database" id="browseDB" class="page">
   <ion-content padding="true" class="has-header">
     <div>
       <p><strong>TODO: Implement search</strong></p>
@@ -30,13 +30,11 @@
         <th>Swatch</th>
         <th>Name</th>
         <th>Brand</th>
-        <th>Collection</th>
       </tr>
       <tr ng-if="!emptyResults" ng-repeat="polish in cur_db_polishes track by $index" ng-click="goToPolish(polish)">
         <td><img class="thumbnail" src="{{polish.Swatch.src}}"/></td>
         <td>{{polish.title}}</td>
         <td>{{polish.Brand}}</td>
-        <td>{{polish.Collection}}</td>
       </tr>
     </table>
   </ion-content>

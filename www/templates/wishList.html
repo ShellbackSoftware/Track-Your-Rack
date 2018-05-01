@@ -1,4 +1,4 @@
-<ion-view title="Wish List" id="wishList" controller="wishListCtrl" ng-init="initWish()" class="page">
+<ion-view title="Wish List" id="wishList" class="page">
   <ion-content padding="true" class="has-header">
     <button id="wishList-button5" class="button button-dark button-block" disabled="true">Share This List</button>
    <div>
@@ -27,13 +27,11 @@
         <th>Swatch</th>
         <th>Name</th>
         <th>Brand</th>
-        <th>Collection</th>
     </tr>
-    <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes" ng-click="openPolish(polish.node)">
-        <td><img class="thumbnail" src="{{polish.node.Swatch.src}}"/></td>
+    <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes" ng-click="openPolish(polish)">
+        <td><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
         <td>{{polish.title}}</td>
         <td>{{polish.Brand}}</td>
-        <td>{{polish.Collection}}</td>
     </tr>
   </table>
   </ion-content>

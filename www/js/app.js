@@ -4,6 +4,7 @@ angular
   'ionic',
   'angular-drupal',
   'ngCookies',
+  'naif.base64',
   'app.controllers',
   'app.directives',
   'app.services'])
@@ -17,12 +18,6 @@ angular
   'SESS_NAME' : 'SESS_NAME',
   'TOKEN' : 'TOKEN'
 })
-
-/*.config(function($ionicConfigProvider, $sceDelegateProvider){
-
-  $sceDelegateProvider.resourceUrlWhitelist([ 'self','*://www.youtube.com/**', '*://player.vimeo.com/video/**']);
-
-})*/
 
 .run(function($ionicPlatform, $rootScope, $state, CONSTANTS) {
   $ionicPlatform.ready(function() {

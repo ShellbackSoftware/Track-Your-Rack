@@ -1,6 +1,6 @@
-<ion-view title="My Rack" id="myrack" class="page" controller="myRackCtrl" ng-init="initRack()">
+<ion-view title="My Rack" id="myrack" class="page">
   <ion-content padding="true" class="has-header">
-    <p>Not sure what color to paint your nails? <button ng-click="showWheel()" disabled="true">Try Your Luck!</button></p>
+    <p>Not sure what color to paint your nails? <button ng-click="spinWheel()" disabled="true">Try Your Luck!</button></p>
     <div>
       <input type="textarea" placeholder="Color" class="inputBox"><button disabled="true">Search</button>
   </div>
@@ -27,13 +27,11 @@
         <th>Swatch</th>
         <th>Name</th>
         <th>Brand</th>
-        <th>Collection</th>
     </tr>
     <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes" ng-click="openPolish(polish)">
         <td><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
         <td>{{polish.title}}</td>
         <td>{{polish.Brand}}</td>
-        <td>{{polish.Collection}}</td>
     </tr>
   </table>
   </ion-content>
