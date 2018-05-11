@@ -247,6 +247,7 @@ $scope.reset_form = function(){
     $scope.data = angular.copy($scope.original);
     $scope.form.wishList.$setPristine();
     $scope.fil_polishes = {};
+    $scope.wpolishes = angular.copy($scope.original);
     $scope.emptyResults = true;
   }
 
@@ -516,7 +517,7 @@ $scope.showBadInfo = function() {
 })
 
 // Logout controller
-.controller('logoutCtrl', function ($scope, $state, drupal, SessionService, $cookies, $ionicPopup) {
+.controller('logoutCtrl', function ($scope, $state, drupal, SessionService, $cookies, $ionicPopup, $window) {
   $scope.showLogout = function() {
     logoutPopup = $ionicPopup.alert({
        title: 'Logging Out',
@@ -531,6 +532,7 @@ $scope.showBadInfo = function() {
         SessionService.clearCookieData();
         logoutPopup.close();
         $state.go('login', {}, {reload: true});
+        $window.location.reload();
       });
   };
 })

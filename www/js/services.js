@@ -28,8 +28,8 @@ angular
 
        return $q.all([
             drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {    }),
-            drupal.views_json("polish/" + node.nid).then(function(node) {
-                $cookies.myRack.push(angular.copy(node[0]));
+            drupal.views_json("polish/" + node.nid).then(function(res) {
+                $cookies.myRack.push(angular.copy(res[0]));
               })
             ]).then(function(results) {  })
       },
@@ -52,7 +52,7 @@ angular
           return $q.all([
           drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {     }),
           drupal.views_json("polish/" + node.nid).then(function(res) {
-            $cookies.myWishList.push(angular.copy(node[0]));
+            $cookies.myWishList.push(angular.copy(res[0]));
           })
           ]).then(function(results){     })
         },
