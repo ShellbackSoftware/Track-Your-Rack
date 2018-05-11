@@ -60,6 +60,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
     return _token_fn().then(function(token) {
         return $http({
           method: 'POST',
+          cache : false,
           url: restPath + '/system/connect.json',
           headers: { 'X-CSRF-Token': token }
         }).then(function(result) {
@@ -79,19 +80,17 @@ function drupal($http, $q, drupalSettings, drupalToken) {
     var drupal = this;
     return $http({
         method: 'POST',
+        cache : false,
         url: restPath + '/user/login',
         headers: { 'Content-Type': 'application/json' },
-        /*transformRequest: function(obj) {
-          var str = [];
-          for (var p in obj)
-            str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
-          return str.join('&');
-        },*/
         data: {
           'username': username,
           'password': password
         }
     }).then(function(result) {
+      if(result.status == 403){
+        return result;
+      }
       drupal.drupalUser = result.data.user;
       drupal.Cookie = result.data.session_name + "=" + result.data.sessid;
       drupal.drupalToken = null;
@@ -101,25 +100,21 @@ function drupal($http, $q, drupalSettings, drupalToken) {
   };
 
   // USER LOGOUT
-  this.user_logout = function() {
+  this.user_logout = function(cookie) {
     var drupal = this;
-    drupal.drupalUser = drupal_user_defaults();
-    drupal.drupalToken = null;
-    // Commented out due to headless; left in in case I break something later
-    /*return this.token().then(function(token) {
+    return this.token().then(function(token) {
         return $http({
             method: 'POST',
+            cache : false,
             url: restPath + '/user/logout.json',
-            headers: { 'X-CSRF-Token': token }
+            headers: { 'X-CSRF-Token': token,
+                       'Authentication': cookie }
         }).then(function(result) {
-          /*if (typeof drupalToken !== 'undefined') {
-            drupalToken = null;
-          }*/
-          /*this.drupal.drupalUser = drupal_user_defaults();
+          this.drupal.drupalUser = drupal_user_defaults();
           this.drupal.drupalToken = null;
           return drupal.connect();
         });
-    });*/
+    });
   };
 
   // USER REGISTER
@@ -128,6 +123,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
     return this.token().then(function(token) {
         return $http({
             method: 'POST',
+            cache : false,
             url: restPath + '/user/register.json',
             headers: {
               'Content-Type': 'application/json',
@@ -186,6 +182,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
   this.flag_node = function(node, cookie) {
     var options = {
       method: 'POST',
+      cache : false,
       url: this.restPath + '/flag/flag.json',
       headers: { 'Content-Type': 'application/json',
                   'Authentication': cookie },
@@ -220,6 +217,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
     var options = {
       method: method,
       url: url,
+      cache : false,
       headers: { 'Content-Type': 'application/json' },
       data: comment // don't wrap comments
     };
@@ -235,6 +233,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
   this.file_save = function(file, cookie) {
     var options = {
       method: 'POST',
+      cache : false,
       url: this.restPath + '/file.json',
       headers: { 'Content-Type': 'application/json',
                   'Authentication': cookie },
@@ -261,6 +260,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
       url = this.restPath + '/node/' + node.nid + '.json';
     }
     var options = {
+      cache : false,
       method: method,
       url: url,
       headers: { 'Content-Type': 'application/json',
@@ -342,6 +342,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
     var options = {
       method: method,
       url: url,
+      cache : false,
       headers: { 'Content-Type': 'application/json' },
       data: account // don't wrap users
     };

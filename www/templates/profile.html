@@ -1,20 +1,12 @@
 <ion-view title="Profile" id="profile" class="page">
   <ion-content padding="true" class="has-header">
-    <div id="profile-markdown1" class="show-list-numbers-and-dots">
-      <p>{{avatar}}</p>
-    </div>
-    <div id="profile-markdown2" class="show-list-numbers-and-dots">
-      <p>{{firstName}}</p>
-    </div>
-    <div id="profile-markdown3" class="show-list-numbers-and-dots">
-      <p>{{bio}}</p>
-    </div>
-    <div id="profile-markdown4" class="show-list-numbers-and-dots">
-      <p>TODO: Ability to have public/private profile; button to friend's wish list that says "check out $name's rack"</p>
-    </div>
+    <p> Avatar </p>
+    <p> Name </p>
+    <p> Bio </p>
+      <p>TODO: Ability to have public/private profile; button to friend's rack / wish list that says "check out $name's rack / wish list"</p>
     <p>TODO: Hide button for own profile</p>
-    <button id="viewRack" style="display:block;" class="button button-dark">Check Out {User}'s Rack</button>
-    <button id="profile-button6" style="text-align:left;" class="button button-dark">Follow</button>
-    <button id="profile-button7" class="button button-dark">Unfollow</button>
+    <button id="viewRack" style="display:block;" class="button button-dark" disabled>Check Out $user's Rack</button>
+    <button style="text-align:left;" class="button button-dark" disabled>Follow</button>
+    <button class="button button-dark" disabled>Unfollow</button>
   </ion-content>
 </ion-view>

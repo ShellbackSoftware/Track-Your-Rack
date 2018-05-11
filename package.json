@@ -12,6 +12,7 @@
         "angular-base64-upload": "^0.1.23",
         "angular-cookies": "^1.5.3",
         "angular-drupal": "0.0.6",
+        "angular-route": "^1.5.3",
         "cordova-android": "^7.0.0",
         "cordova-plugin-console": "^1.0.5",
         "cordova-plugin-device": "^1.1.4",

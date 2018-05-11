@@ -19,7 +19,7 @@ angular
   'TOKEN' : 'TOKEN'
 })
 
-.run(function($ionicPlatform, $rootScope, $state, CONSTANTS) {
+.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -35,9 +35,12 @@ angular
 })
 
 .config(function($stateProvider, $urlRouterProvider, $httpProvider) {
+  $httpProvider.interceptors.push('authInterceptor');
+
   $stateProvider
 
-      .state('tabsController.home', {
+  .state('tabsController.home', {
+    cache: false,
     url: '/home',
     views: {
       'homeTab': {
@@ -94,6 +97,7 @@ angular
   })
 
   .state('tabsController.wishList', {
+    cache: false,
     url: '/wishlist',
     views: {
       'homeTab': {
@@ -104,6 +108,7 @@ angular
   })
 
   .state('tabsController.myRack', {
+    cache: false,
     url: '/myrack',
     views: {
       'homeTab': {
@@ -114,6 +119,7 @@ angular
   })
 
   .state('tabsController.browseDB', {
+    cache: false,
     url: '/browseDB',
     views: {
       'homeTab': {
@@ -140,6 +146,7 @@ angular
   })
 
   .state('tabsController.addPolish', {
+    cache: false,
     url: '/addPolish',
     views: {
       'homeTab': {
@@ -150,12 +157,14 @@ angular
   })
 
   .state('loading', {
+    cache: false,
     url: '/loading',
     templateUrl: 'templates/loading.html',
     controller: 'loadCtrl'
   })
 
   .state('login', {
+    cache: false,
     url: '/login',
     templateUrl: 'templates/login.html',
     controller: 'loginCtrl'

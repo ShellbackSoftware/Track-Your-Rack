@@ -2,6 +2,23 @@ angular
 
 .module('app.services', [])
 
+.service('authInterceptor', function($q, $location) {
+    var service = this;
+
+    service.responseError = function(response) {
+      // Bad credentials
+      if (response.status == 403){
+        return response;
+      }
+      // Session lost
+      if (response.status == 401){
+        $location.path("login");
+        return response;
+      }
+      return $q.reject(response);
+    };
+})
+
 .service('PolishService', function($cookies, drupal, $filter, $q) {
   return {
     // Add polish to My Rack
@@ -44,7 +61,7 @@ angular
     removeWishList: function (node){
       node.flag_name = "wish_list";
       node.action = "unflag";
-      drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {
+      return drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {
         pIndex = $cookies.myRack.findIndex(x=>x.title === node.title);
         $cookies.myWishList.splice(pIndex, 1);
       })
@@ -60,6 +77,7 @@ angular
         $cookies.put("Cookie", drupal.Cookie);
         $cookies.put("Token", drupal.drupalToken);
         $cookies.put("uid", drupal.drupalUser.uid);
+        $cookies.put("email", drupal.drupalUser.mail);
       },
       clearCookieData: function() {
         var cookies = $cookies.getAll();

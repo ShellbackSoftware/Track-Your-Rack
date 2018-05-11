@@ -1,14 +1,13 @@
 angular.module('app.controllers', [])
 
 // Home controller
-.controller('homeCtrl', function ($scope, $cookies) {
+.controller('homeCtrl', function ($scope, $cookies, $state) {
   $scope.username = $cookies.get("username");
+  $cookies.currentPolish = null;
 })
 
 // Loading screen
 .controller('loadCtrl', function ($scope,$state, $q, drupal, $cookies){
-
-  //$scope.initialize = function () {
     $q.all([
       drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
         $cookies.myRack = nodes;
@@ -22,8 +21,6 @@ angular.module('app.controllers', [])
     ]).then(function(results) {
       $state.go('tabsController.home', {}, {reload: true});
     })
-
- // }
 })
 
 // Polish page controller
@@ -171,7 +168,7 @@ angular.module('app.controllers', [])
     }
   }
 
-  $scope.showAll = function(){
+$scope.showAll = function(){
   $scope.cur_db_polishes = drupal.allPolishes;
   $scope.emptyResults = false;
   $scope.clear_filter();
@@ -179,11 +176,11 @@ angular.module('app.controllers', [])
 
 $scope.goToPolish = function(data){
   SessionService.setCurrentPolish(angular.copy(data));
-  $scope.reset_form();
+  $scope.clear_filter();
   $state.go('tabsController.polish');
 }
 
-$scope.reset_form = function(){
+$scope.clear_filter = function(){
     $scope.original = {};
     $scope.data = angular.copy($scope.original);
     $scope.form.database.$setPristine();
@@ -200,7 +197,6 @@ $scope.reset_form = function(){
   $scope.data = {};
 
 // Fill in the filters
-$scope.initWish = function() {
   $scope.emptyResults = true;
   $scope.wpolishes = $cookies.myWishList;
   $scope.wbrands = [];
@@ -213,7 +209,6 @@ $scope.initWish = function() {
       $scope.wcollections.push(polish.Collection);
     }
   })
-}
 
 // Return entire wish list
 $scope.fullWish = function(){
@@ -340,16 +335,23 @@ $scope.reset_form = function(){
 // Add polish to database controller
 .controller('addPolishCtrl', function ($scope, $stateParams, CONSTANTS, $state, drupal, $cookies, $ionicPopup, $q, PolishService) {
   $scope.data = { };
+  $scope.form = { };
   loadPopup = null;
 
   if($cookies.currentPolish){
     $scope.data.pName = $cookies.currentPolish.title;
   }
 
+  $scope.reset_form = function(){
+    $scope.original = {};
+    $scope.data = angular.copy($scope.original);
+    $scope.form.editPolish.$setPristine();
+  }
+
   $scope.showLoading = function() {
     loadPopup = $ionicPopup.alert({
        title: 'Updating',
-       template: 'Please wait one moment, we\'re updating our server! <br/> <ion-spinner align="center"></ion-spinner>',
+       template: 'Please wait one moment, we\'re updating our server! <br/> <ion-spinner></ion-spinner>',
        buttons: null
     });
   }
@@ -383,41 +385,6 @@ $scope.reset_form = function(){
     }
   }
 
-   /* $scope.editPolish = function(polish){
-      $scope.showLoading();
-      var node = {
-        nid: polish.pNid,
-        title: polish.pName,
-        field_collection: { "und": [{ "value": polish.pCollection }] },
-        field_finish: { "und": [{ "value": polish.pFinish }] },
-        field_polish_brand: { "und": [{ "value": polish.pBrand }] },
-        field_polish_number: { "und": [{ "value": polish.pNumber }] },
-        field_polish_season: { "und": [{ "value": polish.pSeason }] },
-        field_polish_site: { "und": [{ "value": polish.pSite }] },
-        field_release_year: { "und": [{ "value": polish.pYear }] }
-      };
-      drupal.node_save(node, $cookies.get("Cookie")).then(function(data) {
-        // Update all the lists to reflect the edited polish
-        $cookies.myRack = null;
-        $cookies.myWishList = null;
-        $cookies.allPolishes = null;
-          $q.all([
-            drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
-              $cookies.myRack = nodes;
-            }),
-            drupal.views_json("user/" + $cookies.get("uid") + "/wish-list").then(function(nodes) {
-              $cookies.myWishList = nodes;
-            }),
-            drupal.views_json("tyr/all-polish").then(function(nodes) {
-              $cookies.allPolishes = nodes;
-            })
-          ]).then(function(results) {
-            loadPopup.close();
-            $state.go('tabsController.home', {}, {reload: true});
-          })
-      });
-    }*/
-
   $scope.checkPolish = function(){
     if($cookies.currentPolish){
       $scope.fill();
@@ -427,6 +394,7 @@ $scope.reset_form = function(){
 
   $scope.createPolish = function(polish){
     $scope.showLoading();
+    var saveImage;
     var node = {
           type: 'polish',
           title: polish.pName,
@@ -436,8 +404,7 @@ $scope.reset_form = function(){
           field_polish_number: { "und": [{ "value": polish.pNumber }] },
           field_polish_season: { "und": [{ "value": polish.pSeason }] },
           field_polish_site: { "und": [{ "value": polish.pSite }] },
-          field_release_year: { "und": [{ "value": polish.pYear }] },
-          field_polish_swatch: { "und": [{ "fid": "" }] }
+          field_release_year: { "und": [{ "value": polish.pYear }] }
         };
     var data = {};
     var newPol = {};
@@ -454,104 +421,117 @@ $scope.reset_form = function(){
           filename:name+type,
           filepath:"public://swatches/"+name+"."+type
         }
-       var saveImage = drupal.file_save(swatch64, $cookies.get("Cookie")).then(function (f) {
-          //node.field_polish_swatch.und[0].fid = f.fid;
-          var wImage = { field_polish_swatch: { "und": [{ "fid": "241" }] } };
-          node = angular.merge(node, wImage);
-          return node;
+        saveImage = drupal.file_save(swatch64, $cookies.get("Cookie")).then(function (f) {
+        var addFile = { field_polish_swatch: { "und": [{ "fid": f.fid }] } };
+        angular.extend(node, addFile );
+         $scope.saveNode(node, polish);
       })
+    }else{
+      $scope.saveNode(node, polish);
     }
-    saveImage
-      .then(drupal.node_save(node, $cookies.get("Cookie")).then(function(data) { console.log(node);
-        // Update all the lists to reflect the new polish
-        $cookies.myRack = null;
-        $cookies.myWishList = null;
-        $cookies.allPolishes = null;
+  }
+      $scope.saveNode = function(node, polish){
+      drupal.node_save(node, $cookies.get("Cookie")).then(function(data) {
+      // Update all the lists to reflect the new polish
+      $cookies.myRack = null;
+      $cookies.myWishList = null;
+      $cookies.allPolishes = null;
 
-        $q.all([
-            drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
-              $cookies.myRack = nodes;
-            }),
-            drupal.views_json("user/" + $cookies.get("uid") + "/wish-list").then(function(nodes) {
-              $cookies.myWishList = nodes;
-            }),
-            drupal.views_json("tyr/all-polish").then(function(nodes) {
-              $cookies.allPolishes = nodes;
-            })
-          ]).then(function(results) {
-            drupal.views_json("polish/" + data.nid).then( function (rnode) {
-                var newNode = angular.copy(rnode[0]);
-                $cookies.allPolishes.push(newNode);
-              if(polish.addToRack && !$scope.inMyRack){
-                  PolishService.addRack(newNode).then( function(result){ })
-                }
-              if(polish.addToWishList && !$scope.inMyWishList){
-                PolishService.addWishList(newNode).then( function(result){ })
-              }
-              if(!polish.addToRack && $scope.inMyRack){
-                  PolishService.removeRack(newNode).then( function(result){ })
-                }
-              if(!polish.addToWishList && $scope.inMyWishList){
-                PolishService.removeWishList(newNode).then( function(result){ })
-              }
-            loadPopup.close();
-            $state.go('tabsController.home', {}, {reload: true});
-            });
-             // Get a new Polish object with the new data
-            /*drupal.views_json("polish/" + newPol.nid).then( function (node) {
-              var newNode = angular.copy(node[0]);
-              $cookies.allPolishes.push(newNode);
-              if(polish.addToRack && !$scope.inMyRack){ console.log("Adding to rack");
-                  PolishService.addRack(newNode).then( function(result){ })
-                }
-              if(polish.addToWishList && !$scope.inMyWishList){ console.log("Adding to wish list");
-                PolishService.addWishList(newNode).then( function(result){ })
-              }
-              if(!polish.addToRack && $scope.inMyRack){ console.log("Removing from rack");
-                  PolishService.removeRack(newNode).then( function(result){ })
-                }
-              if(!polish.addToWishList && $scope.inMyWishList){ console.log("Removing from wish list");
-                PolishService.removeWishList(newNode).then( function(result){ })
-              }
-            loadPopup.close();
-            $state.go('tabsController.home', {}, {reload: true});*/
-            })
+      $q.all([
+          drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
+            $cookies.myRack = nodes;
+          }),
+          drupal.views_json("user/" + $cookies.get("uid") + "/wish-list").then(function(nodes) {
+            $cookies.myWishList = nodes;
+          }),
+          drupal.views_json("tyr/all-polish").then(function(nodes) {
+            $cookies.allPolishes = nodes;
           })
-        )
+        ]).then(function(results) {
+          drupal.views_json("polish/" + data.nid).then( function (rnode) {
+              var newNode = angular.copy(rnode[0]);
+              $cookies.currentPolish = null;
+              $cookies.allPolishes.push(newNode);
+            if(polish.addToRack && !$scope.inMyRack){
+                PolishService.addRack(newNode).then( function(result){ })
+              }
+            if(polish.addToWishList && !$scope.inMyWishList){
+              PolishService.addWishList(newNode).then( function(result){ })
+            }
+            if(!polish.addToRack && $scope.inMyRack){
+                PolishService.removeRack(newNode).then( function(result){ })
+              }
+            if(!polish.addToWishList && $scope.inMyWishList){
+              PolishService.removeWishList(newNode).then( function(result){ })
+            }
+          loadPopup.close();
+          $scope.reset_form();
+          $state.go('tabsController.home', {}, {reload: true});
+          });
+          })
+        })
     }
 })
 
 // Login controller
-.controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService) {
+.controller('loginCtrl', function ($rootScope, $scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window) {
 $scope.data = {};
+var loginPopup;
+
+if($cookies.get("Cookie")){
+    SessionService.clearCookieData();
+    $window.location.reload();
+}
 
 $scope.showBadInfo = function() {
-    loadPopup = $ionicPopup.alert({
+    loginPopup = $ionicPopup.alert({
       title: 'Login failed!',
-      template: 'Please check your credentials!'
+      template: 'Either your username or password is incorrect.'
     });
   }
 
   $scope.login = function(data) {
-    drupal.user_login(data.username, data.password).then(function(result) {
-      if (result) {
-        SessionService.setCookieData();
-        $state.go('loading', {}, {reload: true});
-      }
-      else{
-        $scope.showBadInfo();
-      }
-    });
+    if(!data.username){
+      loginPopup = $ionicPopup.alert({
+        title: 'Login failed!',
+        template: 'Please type in your username.'
+      });
+    }else if(!data.password){
+      loginPopup = $ionicPopup.alert({
+        title: 'Login failed!',
+        template: 'Please type in your password.'
+      });
+    }else{
+      drupal.user_login(data.username, data.password).then(function(result) {
+        if (result.status === 403) {
+          $scope.showBadInfo();
+        }
+        else{
+          SessionService.setCookieData();
+          $state.go('loading', {}, {reload: true});
+        }
+      });
+    }
   };
 })
 
 // Logout controller
-.controller('logoutCtrl', function ($scope, $state, $window, drupal, SessionService) {
+.controller('logoutCtrl', function ($scope, $state, drupal, SessionService, $cookies, $ionicPopup) {
+  $scope.showLogout = function() {
+    logoutPopup = $ionicPopup.alert({
+       title: 'Logging Out',
+       template: 'We\'re destroying some credentials, hang tight! <br/> <ion-spinner></ion-spinner>',
+       buttons: null
+    });
+  }
+
     $scope.logout = function() {
-      drupal.user_logout();
-      SessionService.clearCookieData();
-      $state.go('login', {}, {reload: true});
-      window.location.reload();
+    $scope.showLogout();
+      drupal.user_logout($cookies.get("Cookie")).then(function (res) {
+        SessionService.clearCookieData();
+        logoutPopup.close();
+        $state.go('login', {}, {reload: true});
+      });
   };
 })
 

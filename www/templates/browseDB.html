@@ -25,14 +25,14 @@
 
     <!-- Results from filtering -->
     <p class="noResult" ng-if="emptyResults"> No results. Check your selections!</p>
-    <table>
-      <tr ng-if="!emptyResults">
-        <th>Swatch</th>
+    <table class="resultsTable">
+      <tr ng-if="!emptyResults" class="headRow">
+        <th class="swatchCol">Swatch</th>
         <th>Name</th>
         <th>Brand</th>
       </tr>
       <tr ng-if="!emptyResults" ng-repeat="polish in cur_db_polishes track by $index" ng-click="goToPolish(polish)">
-        <td><img class="thumbnail" src="{{polish.Swatch.src}}"/></td>
+        <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
         <td>{{polish.title}}</td>
         <td>{{polish.Brand}}</td>
       </tr>

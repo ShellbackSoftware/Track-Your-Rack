@@ -1,3 +1,10 @@
+ion-spinner {
+	position: relative;
+  width: 50%;
+	left:50%;
+	top:50%;
+}
+
 .page {
 	background-color: #00cccc;
 }
@@ -8,15 +15,60 @@
 	clear: both;
 }
 
-.spinner {
+.pPreview {
+	width: 256px;
+	height: 256px;
+}
+
+/* ================= Add Polish Form ================= */
+
+.toggleCheck {
+	margin-top: -8px;
+	margin-left: -9px;
+}
+
+.toggleCheck input {
+	margin-right: 5px;
+}
+
+#wishCheck {
+	margin-left: 10px;
+}
+
+#fileUpload {
+  display: inline-block;
+}
+
+#fileUpload span {
+	display: block;
+	cursor: pointer;
 	position: relative;
-	stroke: #103B84;
-	fill: #103B84;
-	left:50%;
-	top:50%;
-	width: 100px;
-	height: 100px;
-	margin: -50px 0 0 -50px;
+	width: 130px;
+  background-color: #444;
+  margin: 0;
+  margin-bottom: 5px;
+  padding: 0 12px;
+  min-width: 52px;
+  min-height: 24px;
+  border-width: 1px;
+  border-style: transparent;
+  border-radius: 4px;
+  vertical-align: top;
+  text-align: center;
+  text-overflow: ellipsis;
+  color: #fff;
+  font-size: 16px;
+  line-height: 34px;
+}
+
+.#fileUpload span .active,
+.#fileUpload span .activated {
+  border-color: #a2a2a2;
+  background-color: #262626;
+}
+
+#fileUpload input[type=file] {
+  display:none;
 }
 
 /* ================= Inputs ================= */
@@ -66,21 +118,6 @@
 	margin-top: 10px;
 }
 
-/* ================= Checkboxes ================= */
-.left_check {
-	display: inline-block;
-	float:left;
-	margin-bottom:10px;
-	margin-top: 10px;
-	height: 30px;
-}
-
-.right_check {
-	margin-bottom:10px;
-	height: 30px;
-	margin-top: 10px;
-}
-
 /* ================= Text ================= */
 .version-number {
     position: absolute;
@@ -95,11 +132,11 @@
 }
 
 a {
-	color: white;
+	color: #81001f
 }
 
 a:visited {
-	color:white;
+	color:#81001f;
 }
 
 /* ================= Results Table ================= */
@@ -119,18 +156,27 @@ th {
 }
 
 td {
-	word-break:break-all;
+	word-break:break-word;
 	text-align: center;
 	vertical-align: middle;
 	border-bottom: 1px dotted black;
+	width: 40%;
 }
 
-/* TODO: Mess with this */
 tr {
 	height: 100px;
 }
 
+table tr.headRow {
+	height: 60px;
+}
+
+table tr td.swatchCol {
+	width: 20%;
+}
+
 .thumbnail{
-  padding: 5px; /* Some padding */
-  width: 60%; /* Set a small width */
+  padding: 10px;
+  height: 128px;
+  width: 128px;
 }
