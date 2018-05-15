@@ -263,6 +263,7 @@ $scope.reset_form = function(){
 .controller('myRackCtrl', function ($state, $scope, drupal, $cookies, SessionService) {
   $scope.form = {};
   $scope.data = {};
+  $scope.randomPolish = "";
 
   // Fill in the filters
   $scope.emptyResults = true;
@@ -277,6 +278,18 @@ $scope.reset_form = function(){
       $scope.mcollections.push(polish.Collection);
     }
   })
+
+  // Return a random polish in the user's rack
+  $scope.spinWheel = function() {
+    $scope.randomPolish=$cookies.myRack[Math.floor(Math.random() * $cookies.myRack.length)].title;
+  }
+
+  // Spits out a random color
+  $scope.randomColor = function () {
+    // Random hex code
+    var color = '#'+Math.floor(Math.random()*16777215).toString(16);
+    $scope.bgColor=color;
+}
 
   // Return entire rack
   $scope.fullRack = function(){
@@ -477,6 +490,7 @@ $scope.reset_form = function(){
 // Login controller
 .controller('loginCtrl', function ($rootScope, $scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window) {
 $scope.data = {};
+$scope.dataSent = false;
 var loginPopup;
 
 if($cookies.get("Cookie")){
@@ -492,20 +506,24 @@ $scope.showBadInfo = function() {
   }
 
   $scope.login = function(data) {
+    $scope.dataSent = true;
     if(!data.username){
       loginPopup = $ionicPopup.alert({
         title: 'Login failed!',
         template: 'Please type in your username.'
       });
+      $scope.dataSent = false;
     }else if(!data.password){
       loginPopup = $ionicPopup.alert({
         title: 'Login failed!',
         template: 'Please type in your password.'
       });
+      $scope.dataSent = false;
     }else{
       drupal.user_login(data.username, data.password).then(function(result) {
         if (result.status === 403) {
           $scope.showBadInfo();
+          $scope.dataSent = false;
         }
         else{
           SessionService.setCookieData();

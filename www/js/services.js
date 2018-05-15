@@ -62,7 +62,7 @@ angular
       node.flag_name = "wish_list";
       node.action = "unflag";
       return drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {
-        pIndex = $cookies.myRack.findIndex(x=>x.title === node.title);
+        pIndex = $cookies.myWishList.findIndex(x=>x.title === node.title);
         $cookies.myWishList.splice(pIndex, 1);
       })
     }

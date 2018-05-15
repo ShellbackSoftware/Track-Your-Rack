@@ -12,7 +12,10 @@
               <input type="password" placeholder="Password" ng-model="data.password">
           </label>
       </div>
-      <button class="button button-block button-dark" ng-click="login(data)">Login</button>
+      <button class="button button-block button-dark" ng-click="login(data)" ng-disabled="dataSent">
+        <span ng-show="!dataSent">Submit</span>
+        <span ng-show="dataSent">Checking Your Credentials...</span>
+      </button>
         <div style="margin-right:-20px;">
             <a ui-sref="signup" id="Login-button22" style="left:-10px;" class="button button-dark  button-full button-clear" disabled="true">Or create an account</a>
         </div>

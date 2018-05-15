@@ -1,11 +1,18 @@
 <ion-view title="My Rack" id="myrack" class="page">
   <ion-content padding="true" class="has-header">
-    <p>Not sure what color to paint your nails? <button ng-click="spinWheel()" disabled="true">Try Your Luck!</button></p>
     <div>
-      <input type="textarea" placeholder="Color" class="inputBox"><button disabled="true">Search</button>
+      <p>Not sure what color to paint your nails? </p>
+      <button ng-click="spinWheel()" class="custom_button">Try Your Luck!</button>
+      <input type="textarea" class="randomBox" ng-value="randomPolish" disabled> <div class="clearfix"></div>
+      <p style="margin-top: 8px">Don't want a specific polish name?</p><button class="custom_button" ng-click="randomColor()">Give Me A Color!</button>
+      <div id="random-color" ng-style="{'background-color': bgColor}"></div>
+    </div>
+    <div class="clearfix"></div> <br/>
+    <div>
+      <input type="textarea" placeholder="Search For A Color" class="searchBox"><button disabled="true">Search</button>
   </div>
-
-  <form name="form.myRack">
+  <br/>
+    <form name="form.myRack">
     <p>Filter options:</p>
     <select class="dropdown" ng-model="data.selectedBrand">
       <option value="">Brand</option>
