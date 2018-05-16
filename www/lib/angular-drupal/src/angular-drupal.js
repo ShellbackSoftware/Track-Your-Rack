@@ -80,7 +80,6 @@ function drupal($http, $q, drupalSettings, drupalToken) {
     var drupal = this;
     return $http({
         method: 'POST',
-        cache : false,
         url: restPath + '/user/login',
         headers: { 'Content-Type': 'application/json' },
         data: {
@@ -89,6 +88,9 @@ function drupal($http, $q, drupalSettings, drupalToken) {
         }
     }).then(function(result) {
       if(result.status == 403){
+        return result;
+      }
+      else if (result.status == 401){
         return result;
       }
       drupal.drupalUser = result.data.user;

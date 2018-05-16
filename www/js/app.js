@@ -1,3 +1,4 @@
+var db = null;
 angular
 
 .module('app', [
@@ -5,9 +6,11 @@ angular
   'angular-drupal',
   'ngCookies',
   'naif.base64',
+  //'ngCordova',
   'app.controllers',
   'app.directives',
-  'app.services'])
+  'app.services',
+  'app.factories'])
 
 .constant('CONSTANTS',{
   'SITE_URL': 'https://www.shellbacksoftware.com/api',
@@ -18,6 +21,7 @@ angular
   'SESS_NAME' : 'SESS_NAME',
   'TOKEN' : 'TOKEN'
 })
+
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -34,7 +38,7 @@ angular
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
+.config(function($stateProvider, $urlRouterProvider, $httpProvider, $ionicConfigProvider) {
   $httpProvider.interceptors.push('authInterceptor');
 
   $stateProvider

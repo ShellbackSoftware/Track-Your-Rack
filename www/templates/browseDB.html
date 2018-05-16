@@ -16,7 +16,7 @@
       <option ng-repeat="cln in bcollections | orderBy:'toString()' "  value="{{cln}}">{{cln}}</option>
     </select>
     <button class="left_button" ng-click="filter_db(data)">Go</button>
-    <button class="right_button" ng-click="clear_filter(data)">Reset Selection</button>
+    <button class="right_button" ng-click="clear_filter()">Reset Selection</button>
     <button class="all_button" ng-click="showAll()">Show All (May be slow)</button>
 </form>
 

@@ -1,13 +1,13 @@
 angular.module('app.controllers', [])
 
 // Home controller
-.controller('homeCtrl', function ($scope, $cookies, $state) {
+.controller('homeCtrl', function ($scope, $cookies) {
   $scope.username = $cookies.get("username");
   $cookies.currentPolish = null;
 })
 
 // Loading screen
-.controller('loadCtrl', function ($scope,$state, $q, drupal, $cookies){
+.controller('loadCtrl', function ($scope,$state, $q, $cookies, drupal){
     $q.all([
       drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
         $cookies.myRack = nodes;
@@ -116,7 +116,7 @@ angular.module('app.controllers', [])
 }])
 
 // Database controller
-.controller('browseCtrl', function ($scope, $state, drupal, $cookies, SessionService) {
+.controller('browseCtrl', function ($scope, $state, $cookies, SessionService) {
   $scope.form = {};
   $scope.data = {};
   $scope.emptyResults = true;
@@ -169,9 +169,8 @@ angular.module('app.controllers', [])
   }
 
 $scope.showAll = function(){
-  $scope.cur_db_polishes = drupal.allPolishes;
+  $scope.cur_db_polishes = $cookies.allPolishes;
   $scope.emptyResults = false;
-  $scope.clear_filter();
 }
 
 $scope.goToPolish = function(data){
@@ -488,20 +487,28 @@ $scope.reset_form = function(){
 })
 
 // Login controller
-.controller('loginCtrl', function ($rootScope, $scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window) {
+.controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window) {
 $scope.data = {};
 $scope.dataSent = false;
 var loginPopup;
 
 if($cookies.get("Cookie")){
     SessionService.clearCookieData();
-    $window.location.reload();
+    $window.location.reload(true);
 }
 
-$scope.showBadInfo = function() {
+  $scope.showBadInfo = function() {
     loginPopup = $ionicPopup.alert({
       title: 'Login failed!',
       template: 'Either your username or password is incorrect.'
+    });
+  }
+
+  $scope.loginFailed = function(){
+    loginPopup = $ionicPopup.alert({
+      title: 'Login failed!',
+      template: 'Looks there was an error - Wait one moment while we fix this! <br/> <ion-spinner align="center"></ion-spinner>',
+       buttons: null
     });
   }
 
@@ -523,6 +530,15 @@ $scope.showBadInfo = function() {
       drupal.user_login(data.username, data.password).then(function(result) {
         if (result.status === 403) {
           $scope.showBadInfo();
+          $scope.dataSent = false;
+        }
+        if (result.status === 401) {
+          $scope.loginFailed();
+           drupal.user_logout($cookies.get("Cookie")).then(function (res) {
+            SessionService.clearCookieData();
+            loginPopup.close();
+            $window.location.reload(true);
+          });
           $scope.dataSent = false;
         }
         else{
@@ -550,7 +566,7 @@ $scope.showBadInfo = function() {
         SessionService.clearCookieData();
         logoutPopup.close();
         $state.go('login', {}, {reload: true});
-        $window.location.reload();
+        $window.location.reload(true);
       });
   };
 })
