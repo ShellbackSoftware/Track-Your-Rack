@@ -12,6 +12,8 @@
       <input type="textarea" placeholder="Search For A Color" class="searchBox"><button disabled="true">Search</button>
   </div>
   <br/>
+  <p>You have {{numBrands}} different brands, and {{rackPolishes}} total polishes.</p>
+  <p ng-if="currentBrand">You have {{brandPolishes}} of {{sel_brand}}</p>
     <form name="form.myRack">
     <p>Filter options:</p>
     <select class="dropdown" ng-model="data.selectedBrand">
@@ -31,15 +33,20 @@
   <table>
     <p ng-if="emptyResults"> No results. Check your selections!</p>
     <tr ng-if="!emptyResults">
+        <th class="checkCell" ng-if="editMode">In Rack</th>
+        <th class="checkCell" ng-if="editMode">In Wish List</th>
         <th class="swatchCol">Swatch</th>
         <th>Name</th>
         <th>Brand</th>
     </tr>
     <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes" ng-click="openPolish(polish)">
+        <td class="checkCell" ng-if="editMode">checkbox</td>
+        <td class="checkCell" ng-if="editMode">checkbox</td>
         <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
         <td>{{polish.title}}</td>
         <td>{{polish.Brand}}</td>
     </tr>
   </table>
+  <button ng-if="!emptyResults" class="all_button" ng-click="scrollUp()">Return To Top</button>
   </ion-content>
 </ion-view>

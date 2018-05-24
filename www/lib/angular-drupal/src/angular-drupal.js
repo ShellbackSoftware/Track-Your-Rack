@@ -87,10 +87,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
           'password': password
         }
     }).then(function(result) {
-      if(result.status == 403){
-        return result;
-      }
-      else if (result.status == 401){
+      if(result.status == 403 || result.status == 401){
         return result;
       }
       drupal.drupalUser = result.data.user;
@@ -133,6 +130,9 @@ function drupal($http, $q, drupalSettings, drupalToken) {
             },
             data: { account: account }
         }).then(function(result) {
+          if(result.status == 403){
+            return result;
+          }
           return result.data;
           //this.drupal.drupalUser = drupal_user_defaults();
           //this.drupal.drupalToken = null;

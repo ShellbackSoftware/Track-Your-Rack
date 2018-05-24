@@ -116,12 +116,15 @@ angular.module('app.controllers', [])
 }])
 
 // Database controller
-.controller('browseCtrl', function ($scope, $state, $cookies, SessionService) {
+.controller('browseCtrl', function ($scope, $state, $cookies, SessionService, $ionicScrollDelegate, $ionicPopup, PolishService) {
+  $scope.editMode = false;
   $scope.form = {};
   $scope.data = {};
+  $scope.checks = [];
   $scope.emptyResults = true;
   $scope.bpolishes = [];
   $scope.cur_db_polishes = [];
+  $scope.tempPolishes = $cookies.myRack;
 
   $scope.bpolishes = $cookies.allPolishes;
   $scope.bbrands = [];
@@ -135,6 +138,50 @@ angular.module('app.controllers', [])
     }
   })
 
+  $scope.setEditMode = function (){
+    if($scope.editMode){
+      $scope.editMode = false;
+    }else {
+      $scope.editMode = true;
+    }
+  }
+
+  $scope.setFlag = function(cPolish){
+    if($scope.checks[cPolish.nid]){
+      $scope.checks[cPolish.nid] = false;
+    }
+    else{
+      $scope.checks[cPolish.nid] = true;
+    }
+  }
+
+  $scope.showAlert = function() {
+    loadPopup = $ionicPopup.show({
+       title: 'Updating',
+       template: 'Please wait one moment, we\'re updating your rack! <br/> <ion-spinner align="center"></ion-spinner>',
+       buttons: null
+    });
+  }
+
+  $scope.bulkFlag = function () {
+    $scope.showAlert();
+    // Checks through all polishes to see if it's flagged or not; Must be a better way to do this
+    $cookies.allPolishes.forEach(function (p){
+      var finRack = $cookies.myRack.filter(function(pol) {
+          return pol.title === p.title;
+        });
+        if(finRack.length && $scope.checks[p.nid] === false){
+          // In rack, unselected, so unflag the node
+          PolishService.removeRack(p).then( function(result){ })
+        }else if(!finRack.length && $scope.checks[p.nid] === true){
+          // Not in rack, selected, so flag
+          PolishService.addRack(p).then( function(result){ })
+        }
+      // Else ignore and do nothing
+    })
+    loadPopup.close();
+  }
+
   $scope.filter_db = function(data){
     $scope.emptyResults = false;
     $scope.cur_db_polishes = {};
@@ -147,6 +194,14 @@ angular.module('app.controllers', [])
       $scope.emptyResults = true;
     }else{
       $cookies.allPolishes.forEach(function (cur_polish){
+        var finRack = $cookies.myRack.filter(function(p) {
+          return p.title === cur_polish.title;
+        });
+        if(finRack.length > 0){
+          $scope.checks[cur_polish.nid] = true;
+        }else{
+          $scope.checks[cur_polish.nid] = false;
+        }
         if(cur_polish.Brand === data.selectedBrand){
           filtered_db.push(cur_polish);
           selbrand = true;
@@ -168,30 +223,39 @@ angular.module('app.controllers', [])
     }
   }
 
-$scope.showAll = function(){
-  $scope.cur_db_polishes = $cookies.allPolishes;
-  $scope.emptyResults = false;
-}
+  $scope.showAll = function(){
+    $scope.cur_db_polishes = $cookies.allPolishes;
+    $scope.emptyResults = false;
+  }
 
-$scope.goToPolish = function(data){
-  SessionService.setCurrentPolish(angular.copy(data));
-  $scope.clear_filter();
-  $state.go('tabsController.polish');
-}
+  $scope.goToPolish = function(data){
+    if($scope.editMode){
+      $scope.setFlag(data);
+    }else{
+      SessionService.setCurrentPolish(angular.copy(data));
+      $scope.clear_filter();
+      $state.go('tabsController.polish');
+    }
+  }
 
-$scope.clear_filter = function(){
+  $scope.clear_filter = function(){
     $scope.original = {};
     $scope.data = angular.copy($scope.original);
     $scope.form.database.$setPristine();
     $scope.bpolishes = angular.copy($scope.original);
     $scope.cur_db_polishes = {};
     $scope.emptyResults = true;
+    $scope.editMode = false;
+  }
+
+   $scope.scrollUp = function(){
+    $ionicScrollDelegate.scrollTop();
   }
 })
 
 
 // Wish List controller
-.controller('wishListCtrl', function ($state, $scope, drupal, $cookies, SessionService) {
+.controller('wishListCtrl', function ($state, $scope, drupal, $cookies, SessionService, $ionicScrollDelegate) {
   $scope.form = {};
   $scope.data = {};
 
@@ -255,14 +319,20 @@ $scope.reset_form = function(){
     $scope.reset_form();
     $state.go('tabsController.polish');
   }
+
+  $scope.scrollUp = function(){
+    $ionicScrollDelegate.scrollTop();
+  }
 })
 
 
 // My Rack controller
-.controller('myRackCtrl', function ($state, $scope, drupal, $cookies, SessionService) {
+.controller('myRackCtrl', function ($state, $scope, drupal, $cookies, SessionService, $ionicScrollDelegate) {
+  $scope.currentBrand = false;
   $scope.form = {};
   $scope.data = {};
   $scope.randomPolish = "";
+  $scope.rackPolishes = $cookies.myRack.length;
 
   // Fill in the filters
   $scope.emptyResults = true;
@@ -277,6 +347,9 @@ $scope.reset_form = function(){
       $scope.mcollections.push(polish.Collection);
     }
   })
+
+  $scope.numBrands = $scope.mbrands.length;
+
 
   // Return a random polish in the user's rack
   $scope.spinWheel = function() {
@@ -298,6 +371,7 @@ $scope.reset_form = function(){
 
   // Filter rack for output
   $scope.filterRack = function(data){
+    $scope.currentBrand = true;
     $scope.mpolishes = $cookies.myRack;
     $scope.emptyResults = false;
     var selbrand = false;
@@ -321,6 +395,8 @@ $scope.reset_form = function(){
     if($scope.fil_polishes.length == 0){
       $scope.emptyResults = true;
     }
+    $scope.sel_brand = data.selectedBrand;
+    $scope.brandPolishes = $scope.fil_polishes.length;
   }
 
   $scope.reset_form = function(){
@@ -332,11 +408,15 @@ $scope.reset_form = function(){
     $scope.emptyResults = true;
   }
 
-    $scope.openPolish = function(polish){
-      SessionService.setCurrentPolish(angular.copy(polish));
-      $scope.reset_form();
-      $state.go('tabsController.polish');
-    }
+  $scope.openPolish = function(polish){
+    SessionService.setCurrentPolish(angular.copy(polish));
+    $scope.reset_form();
+    $state.go('tabsController.polish');
+  }
+
+  $scope.scrollUp = function(){
+    $ionicScrollDelegate.scrollTop();
+  }
 })
 
 // Scanner controller
@@ -349,7 +429,15 @@ $scope.reset_form = function(){
 .controller('addPolishCtrl', function ($scope, $stateParams, CONSTANTS, $state, drupal, $cookies, $ionicPopup, $q, PolishService) {
   $scope.data = { };
   $scope.form = { };
+  $scope.aBrands = $cookies.allPolishes;
+  $scope.brandNames = [ ];
   loadPopup = null;
+
+  $scope.aBrands.forEach(function (polish) {
+    if($scope.brandNames.indexOf(polish.Brand) === -1 ) {
+      $scope.brandNames.push(polish.Brand);
+    }
+  })
 
   if($cookies.currentPolish){
     $scope.data.pName = $cookies.currentPolish.title;
@@ -405,10 +493,48 @@ $scope.reset_form = function(){
   }
  $scope.checkPolish();
 
+  $scope.clearBrand = function (){
+    if($scope.newBrand){
+      $scope.newBrand = false;
+    }else {
+      $scope.newBrand = true;
+    }
+    $scope.data.selBrand="";
+    $scope.data.pBrand = "";
+  }
+
   $scope.createPolish = function(polish){
-    $scope.showLoading();
+    if(!polish.pName){
+        missingName = $ionicPopup.alert({
+        title: 'Missing Value',
+        template: 'Please enter the polish name.'
+      });
+      return;
+    }
+    if(!polish.selBrand && !polish.pBrand){
+      missingBrand = $ionicPopup.alert({
+        title: 'Missing Value',
+        template: 'Please enter the brand.'
+      });
+      return;
+    }
+
+  $scope.showLoading();
     var saveImage;
-    var node = {
+    if(polish.selBrand){
+          var node = {
+          type: 'polish',
+          title: polish.pName,
+          field_collection: { "und": [{ "value": polish.pCollection }] },
+          field_finish: { "und": [{ "value": polish.pFinish }] },
+          field_polish_brand: { "und": [{ "value": polish.selBrand }] },
+          field_polish_number: { "und": [{ "value": polish.pNumber }] },
+          field_polish_season: { "und": [{ "value": polish.pSeason }] },
+          field_polish_site: { "und": [{ "value": polish.pSite }] },
+          field_release_year: { "und": [{ "value": polish.pYear }] }
+        };
+    }else{
+          var node = {
           type: 'polish',
           title: polish.pName,
           field_collection: { "und": [{ "value": polish.pCollection }] },
@@ -419,6 +545,7 @@ $scope.reset_form = function(){
           field_polish_site: { "und": [{ "value": polish.pSite }] },
           field_release_year: { "und": [{ "value": polish.pYear }] }
         };
+    }
     var data = {};
     var newPol = {};
 
@@ -443,7 +570,8 @@ $scope.reset_form = function(){
       $scope.saveNode(node, polish);
     }
   }
-      $scope.saveNode = function(node, polish){
+
+    $scope.saveNode = function(node, polish){
       drupal.node_save(node, $cookies.get("Cookie")).then(function(data) {
       // Update all the lists to reflect the new polish
       $cookies.myRack = null;
@@ -464,7 +592,6 @@ $scope.reset_form = function(){
           drupal.views_json("polish/" + data.nid).then( function (rnode) {
               var newNode = angular.copy(rnode[0]);
               $cookies.currentPolish = null;
-              $cookies.allPolishes.push(newNode);
             if(polish.addToRack && !$scope.inMyRack){
                 PolishService.addRack(newNode).then( function(result){ })
               }
@@ -487,7 +614,7 @@ $scope.reset_form = function(){
 })
 
 // Login controller
-.controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window) {
+.controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window, $location, UserService) {
 $scope.data = {};
 $scope.dataSent = false;
 var loginPopup;
@@ -496,6 +623,52 @@ if($cookies.get("Cookie")){
     SessionService.clearCookieData();
     $window.location.reload(true);
 }
+
+  $scope.resetPassword = function(){
+    $scope.data = {};
+    var resetPopup = $ionicPopup.show({
+      template: '<input type="text" ng-model="data.user">',
+      title: 'Password Reset',
+      subTitle: 'Please enter your Email Address or Username associated with your Shellback Software account',
+      scope: $scope,
+      buttons: [
+        { text: 'Cancel', onTap: function(e) { return false; }  },
+        {
+          text: '<b>Send</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            UserService.resetPassword($scope.data.user).then(function (result){
+              if(result.status === 401){
+                passwordReset = $ionicPopup.alert({
+                  title: 'Password Reset Failed',
+                  template: 'Please type in your Username or Email.'
+                });
+                return false;
+              }else if(result.status === 403){
+                passwordReset = $ionicPopup.alert({
+                  title: 'Password Reset Failed',
+                  template: 'Please enter a valid Username or Email'
+                });
+                return false;
+              }
+              else{
+                return true;
+              }
+            })
+          }
+        }
+      ]
+    })
+
+    resetPopup.then(function(res) {
+    if(res == true){
+      passwordReset = $ionicPopup.alert({
+        title: 'Password Reset Requested',
+        template: 'Please check your email for further instructions.'
+      });
+      }
+    });
+  }
 
   $scope.showBadInfo = function() {
     loginPopup = $ionicPopup.alert({
@@ -572,23 +745,62 @@ if($cookies.get("Cookie")){
 })
 
 // Signup controller
-.controller('signupCtrl', function ($scope, $ionicPopup, LoginService,$state) {
-$scope.data = {};
+.controller('signupCtrl', function ($scope, $ionicPopup, $state, drupal) {
+  $scope.dataSent = false;
 
-// TODO: After implemented, add in popup to tell user to follow link in their email
-  $scope.signup = function (data) {
- LoginService.signup(data.username,data.password).then(function (success) {
-      //$state.go('tabsController.home', {}, {reload: true});
-    var alertPopup = $ionicPopup.alert({
-      title: 'Thank You For Registering!',
-      template: 'Please check the email you provided for further instructions on how to activate your account!'
+$scope.showRegister = function() {
+    registerPopup = $ionicPopup.alert({
+       title: 'Account Created',
+       template: 'Thank you for signing up at Shellback Software! Please check your email to verify your account.',
     });
-    },
-        function (err) {
-            var alertPopup = $ionicPopup.alert({
-            title: 'Login failed.',
-            template: 'Please verify your credentials, and try to log in again.'
-            });
-        });
-  };
+  }
+
+  $scope.showError = function() {
+    errorPopup = $ionicPopup.alert({
+       title: 'Invalid Email',
+       template: 'Please enter a valid email. ',
+    });
+  }
+
+  $scope.showIncomplete = function() {
+    errorPopup = $ionicPopup.alert({
+       title: 'Registration Failed',
+       template: 'Please fill out all of the fields and try again. ',
+    });
+  }
+
+  $scope.register = function(creds) {
+    $scope.dataSent = true;
+    if(!creds || !creds.username){
+      $scope.showIncomplete();
+      $scope.dataSent = false;
+    }else if(!creds.email){
+      $scope.showError();
+      $scope.dataSent = false;
+    }else {
+      var account = {
+        name: creds.username,
+        mail: creds.email
+      }
+      drupal.user_register(account).then(function(data) {
+        if(data.status === 403){
+          var nameError = "";
+          var emailError = "";
+          var msg = data.statusText.split(':')[1];
+          nameError = msg.split(/taken(?=&#?[a-zA-Z0-9]+;)/g)[0];
+          if(msg.split(/taken(?=&#?[a-zA-Z0-9]+;)/g)[1]){
+          emailError = msg.split(/taken(?=&#?[a-zA-Z0-9]+;)/g)[1];}
+          regPopup = $ionicPopup.alert({
+             title: 'Registration Failed',
+             template: 'We have encountered the following error(s): <br/> '
+                      + nameError + '<br/>' + emailError,
+          });
+          $scope.dataSent = false;
+        }else{
+          $scope.showRegister();
+          $scope.dataSent = false;
+        }
+      });
+    }
+  }
 })

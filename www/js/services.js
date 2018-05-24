@@ -2,6 +2,23 @@ angular
 
 .module('app.services', [])
 
+.service('UserService', function(CONSTANTS, $http ) {
+  return {
+    resetPassword: function (email) {
+      return $http({
+        method: 'POST',
+        url: CONSTANTS.SITE_URL + '/user/request_new_password.json',
+        headers: { 'Content-Type': 'application/json' },
+        data: {
+          'name': email
+        }
+    }).then(function(result) {
+      return result;
+    });
+    }
+  }
+})
+
 .service('authInterceptor', function($q, $location) {
     var service = this;
 

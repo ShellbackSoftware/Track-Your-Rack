@@ -1,7 +1,7 @@
 <ion-view title="{{pName}}" class="page">
     <ion-content padding="true" class="has-header has-footer">
         <img class="pPreview" ng-src="{{curPolish.Swatch.src}}"/>
-        <p>Color: {{curPolish.title}} </p>
+        <p>Polish Name: {{curPolish.title}} </p>
         <p ng-if="curPolish.Brand">Brand: {{curPolish.Brand}} </p>
         <p ng-if="curPolish.Collection">Collection: {{curPolish.Collection}}</p>
         <p ng-if="curPolish.Number">Number: {{curPolish.Number}} </p>
@@ -14,5 +14,6 @@
         <button class="right_button" ng-show="inWishList" ng-click="removeFromWishList()">Remove From Wish List</button>
         <button class="right_button" ng-show="!inWishList" ng-click="addToWishList()">Add To Wish List</button>
         <button ng-click="updatePolish()" class="all_button">Edit Polish</button>
+        <button class="left_button" ng-click="flagDupe()">This polish is a duplicate</button>
     </ion-content>
 </ion-view>

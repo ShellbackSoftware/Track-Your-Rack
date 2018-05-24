@@ -3,10 +3,19 @@
  <p><strong>TODO:</strong> Add way to select a brand already in the system.</p>
 <div class="addPolishContainer">
       <form name="form.editPolish" ng-submit="createPolish(data)">
-        <label for="colorbox">Color <strong>REQUIRED</strong>
+        <label for="colorbox">Polish Name <strong>REQUIRED</strong>
             <input type="textarea" ng-model="data.pName" placeholder="e.g. 'Wish on a Starfish'" id="colorbox" class="inputBox"></label>
+
         <label for="brandbox">Brand <strong>REQUIRED</strong>
-          <input type="textarea" id="brandbox" class="inputBox" ng-model="data.pBrand"></label>
+          <select class="dropdown" ng-model="data.selBrand" ng-disabled="newBrand">
+            <option value="" ng-selected="newBrand">Choose Your Brand</option>
+            <option ng-repeat="p in brandNames | orderBy:'toString()' "  value="{{p}}">{{p}}</option>
+          </select>
+         <div class="toggleCheck">
+          <label for="brandBox"><input type="checkbox" ng-click="clearBrand()" name="brandBox">My brand isn't here</label><br/>
+          <input type="textarea" placeholder=" e.g. 'China Glaze'" class="inputBox" ng-model="data.pBrand" ng-show="newBrand">
+        </div>
+
         <label for="collectionbox">Collection
           <input type="textarea" id="collectionbox" class="inputBox" ng-model="data.pCollection"></label>
         <label for="finishbox">Finish

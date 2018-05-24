@@ -1,6 +1,6 @@
 <ion-view title="Polish Database" id="browseDB" class="page">
   <ion-content padding="true" class="has-header">
-    <div>
+    <div id="top">
       <p><strong>TODO: Implement search</strong></p>
       <input type="textarea" placeholder="Brand, color, or collection" class="searchBox" ng-model="data.searchTerm"><button class="search_button" ng-click="searchDB(data)" disabled="true">Search</button>
   </div>
@@ -19,23 +19,26 @@
     <button class="right_button" ng-click="clear_filter()">Reset Selection</button>
     <button class="all_button" ng-click="showAll()">Show All (May be slow)</button>
 </form>
-
+  <button ng-if="!emptyResults" ng-click="setEditMode()" class="custom_button">Bulk Edit Your Rack</button>
     <p><strong>TODO: Reactive headings; click on each heading to sort</strong></p>
-    <p><strong>TODO: Add "Return to top" at bottom of table</strong></p>
 
     <!-- Results from filtering -->
     <p class="noResult" ng-if="emptyResults"> No results. Check your selections!</p>
     <table class="resultsTable">
       <tr ng-if="!emptyResults" class="headRow">
+        <th class="checkCell" ng-if="editMode">Rack</th>
         <th class="swatchCol">Swatch</th>
         <th>Name</th>
         <th>Brand</th>
       </tr>
       <tr ng-if="!emptyResults" ng-repeat="polish in cur_db_polishes track by $index" ng-click="goToPolish(polish)">
+        <td class="checkCell" ng-if="editMode"><input type="checkbox" ng-model="checks[polish.nid]"/>&nbsp;</td>
         <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
         <td>{{polish.title}}</td>
         <td>{{polish.Brand}}</td>
       </tr>
     </table>
+    <button ng-if="editMode" class="custom_button" ng-click="bulkFlag()">Submit Bulk Change</button>
+    <button ng-if="!emptyResults" class="all_button" ng-click="scrollUp()">Return To Top</button>
   </ion-content>
 </ion-view>

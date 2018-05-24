@@ -1,21 +1,19 @@
 <ion-view title="Signup" id="signup" class="page">
   <ion-content padding="true" class="has-header">
+    <p>If you do not already have an account at <a href="https://www.shellbacksoftware.com">Shellback Software</a>, you can either sign up there, or create your account here! You use the same account both on the website and here in the app.</p>
     <form id="signup-form3" class="list">
       <ion-list id="signup-list2">
         <label class="item item-input" id="signup-input3">
           <input type="text" placeholder="Username" ng-model="data.username">
         </label>
         <label class="item item-input" id="signup-input4">
-          <input type="email" placeholder="Email" ng-model="email">
-        </label>
-        <label class="item item-input" id="signup-input5">
-          <input type="text" placeholder="Password" ng-model="password">
+          <input type="email" placeholder="Email" ng-model="data.email">
         </label>
       </ion-list>
-      <button id="signup-button10" class="button button-dark button-block" ng-click="register(data)">Sign up</button>
+      <button class="button button-dark button-block" ng-click="register(data)" ng-disabled="dataSent">
+        <span ng-show="!dataSent">Sign up</span>
+      <span ng-show="dataSent">Creating Your Account...</span>
+    </button>
     </form>
-    <div>
-      <p> Thank you for registering! To proceed, please follow the directions in your email!</p>
-    </div>
   </ion-content>
 </ion-view>

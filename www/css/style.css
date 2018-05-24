@@ -118,6 +118,22 @@ ion-spinner {
 	border-color: transparent;
   background-color: #444;
   color: #fff;
+  border-radius: 10px;
+}
+
+.button {
+	border-radius: 10px
+}
+
+.bulk_button {
+	border-color: transparent;
+  background-color: #444	;
+  color: #fff;
+  float: left;
+  height: 30px;
+  margin-right: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
 }
 
 .custom_button {
@@ -127,6 +143,7 @@ ion-spinner {
   float: left;
   height: 30px;
   margin-right: 10px;
+  border-radius: 10px;
 }
 
 .left_button {
@@ -138,6 +155,7 @@ ion-spinner {
 	border-color: transparent;
   background-color: #444;
   color: #fff;
+  border-radius: 10px;
 }
 
 .right_button {
@@ -149,6 +167,7 @@ ion-spinner {
 	border-color: transparent;
   background-color: #444;
   color: #fff;
+  border-radius: 10px;
 }
 
 /* ================= Text ================= */
@@ -162,6 +181,12 @@ ion-spinner {
 .noResult {
 	text-align: center;
 	margin-top: 10px;
+}
+
+.forgot_password {
+	margin-top: -10px;
+	margin-bottom: 10px;
+	float:right;
 }
 
 a {
@@ -180,6 +205,7 @@ table {
 	width: 100%;
 	border-radius: 15px;
 	background-color: #E3E5E8;
+	margin-bottom: 10px;
 }
 
 th {
@@ -206,6 +232,11 @@ table tr.headRow {
 
 table tr td.swatchCol {
 	width: 20%;
+}
+
+.checkCell {
+	width: 5%;
+	padding-left: 10px;
 }
 
 .thumbnail{
