@@ -2,7 +2,7 @@ angular
 
 .module('app.services', [])
 
-.service('UserService', function(CONSTANTS, $http ) {
+.service('UserService', function(CONSTANTS, $http, $q, $cookies, drupal ) {
   return {
     resetPassword: function (email) {
       return $http({
@@ -15,6 +15,34 @@ angular
     }).then(function(result) {
       return result;
     });
+    },
+
+     // Follow
+     followUser: function(userID, targetID) {
+       var user = {
+        uid: userID,
+        flag_name:"following",
+        action:"flag"
+       };
+     return $q.all([
+          drupal.flag_user(user, targetID, $cookies.get("Cookie")).then(function(result) {    }),
+          drupal.user_load(targetID).then(function(res) {
+              $cookies.following.push(angular.copy(res[0]));
+            })
+          ]).then(function(results) {  })
+    },
+
+  // Unfollow
+  unfollowUser: function (userID, targetID){
+    var user = {
+      uid: userID,
+      flag_name:"following",
+      action:"unflag"
+    };
+      return drupal.flag_user(user, targetID, $cookies.get("Cookie")).then(function(result) {
+        pIndex = $cookies.following.findIndex(x=>x.uid === userID);
+        $cookies.following.splice(pIndex, 1);
+      })
     }
   }
 })
@@ -82,7 +110,14 @@ angular
         pIndex = $cookies.myWishList.findIndex(x=>x.title === node.title);
         $cookies.myWishList.splice(pIndex, 1);
       })
-    }
+    },
+
+    // Duplicate polish
+     flagDupe: function(node) {
+        node.flag_name = "duplicate_page";
+        node.action = "flag";
+        return drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) { })
+      }
   }
 })
 
@@ -105,6 +140,10 @@ angular
         $cookies.myRack = null;
         $cookies.myWishList = null;
         $cookies.allPolishes = null;
+        $cookies.currentUser = null;
+        $cookies.following = null;
+        $cookies.allUsers = null;
+        $cookies.searchName = null;
       },
       setCurrentPolish: function(polish) {
         $cookies.currentPolish = null;

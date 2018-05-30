@@ -1,6 +1,5 @@
 <ion-view title="Add A Polish" id="addPolish" class="page">
   <ion-content padding="true" class="has-header">
- <p><strong>TODO:</strong> Add way to select a brand already in the system.</p>
 <div class="addPolishContainer">
       <form name="form.editPolish" ng-submit="createPolish(data)">
         <label for="colorbox">Polish Name <strong>REQUIRED</strong>
@@ -42,11 +41,13 @@
         </div>
 
         <div class="toggleCheck">
+          <label for="rackCheck">
           <input type="checkbox" ng-model="data.addToRack" id="rackCheck"></input>
-          <label for="rackCheck">I have this polish.</label>
+          I have this polish.</label>
 
+          <label for="wishCheck">
           <input class="right_check" type="checkbox" ng-model="data.addToWishList" id="wishCheck"></input>
-          <label for="wishCheck">I want this polish.</label>
+          I want this polish.</label>
         </div>
         <div class="clearfix"></div>
         <button type="submit" class="button button-dark">Submit</button>

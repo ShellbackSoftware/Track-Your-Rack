@@ -1,7 +1,15 @@
 <ion-view title="Friends" id="friends" class="page">
   <ion-content padding="true" class="has-header">
-    <div id="friends-markdown5" class="show-list-numbers-and-dots">
-      <p style="color:#000000;">Think Facebook - Name, picture, click on name to go to profile</p>
-    </div>
+    <input type="textbox" class="searchBox" ng-model="data.searchUser">
+    <button class="custom_button" ng-click="search(data)">Search Friends</button> <p style="float:left; margin-right:10px;">or</p> 
+    <button class="custom_button" ng-click="viewUsers()">Browse All Users</button>
+    <br /> <br /> <br />
+    <table>
+    <p ng-if="noFriends"> Looks like you don't have any friends. Why not search for some? </p>
+    <tr ng-if="!noFriends" ng-repeat="user in following | orderBy:'toString()'" ng-click="goUser(user)">
+        <td class="swatchCol"><img class="thumbnail" ng-src="{{user.picture}}"/></td>
+        <td class="friendsList">{{user.name}}</td>
+    </tr>
+  </table>
   </ion-content>
 </ion-view>

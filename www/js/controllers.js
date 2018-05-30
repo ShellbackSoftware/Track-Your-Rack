@@ -7,7 +7,7 @@ angular.module('app.controllers', [])
 })
 
 // Loading screen
-.controller('loadCtrl', function ($scope,$state, $q, $cookies, drupal){
+.controller('loadCtrl', function ($scope,$state, $q, $cookies, drupal, CONSTANTS){
     $q.all([
       drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
         $cookies.myRack = nodes;
@@ -17,6 +17,27 @@ angular.module('app.controllers', [])
       }),
       drupal.views_json("tyr/all-polish").then(function(nodes) {
         $cookies.allPolishes = nodes;
+      }),
+      drupal.user_load($cookies.get("uid")).then(function(account) {
+        $cookies.currentUser = account;
+      }),
+      drupal.views_json("user/" + $cookies.get("uid") + "/following").then(function(users) {
+        $cookies.following = [];
+        users.forEach(function (u){
+          drupal.user_load(u.uid).then(function(res) {
+            if(u.uid !== $cookies.get("uid")){
+              if(res.picture === null){
+              res.picture = CONSTANTS.BASE_URL + "/sites/default/files/avatars/default_user.png"
+              }else{
+                res.picture = res.picture.url;
+              }
+            $cookies.following.push(res);
+          }
+          })
+        })
+      }),
+      drupal.views_json("user.json").then(function(nodes) {
+        $cookies.allUsers = nodes;
       })
     ]).then(function(results) {
       $state.go('tabsController.home', {}, {reload: true});
@@ -87,33 +108,217 @@ angular.module('app.controllers', [])
     })
   }
 
+    $scope.showFlag = function() {
+    flagPopup = $ionicPopup.alert({
+       title: 'Flagging',
+       template: 'Please wait one moment, we\'re sending this flag to the server! <br/> <ion-spinner></ion-spinner>',
+       buttons: null
+    });
+  }
+
+  $scope.flagDupe = function (){
+    $scope.showFlag();
+    PolishService.flagDupe($cookies.currentPolish).then( function(result){
+      flagPopup.close();
+      flagPopup2 = $ionicPopup.alert({
+       title: 'Flagging Complete',
+       template: 'This polish has been flagged as a duplicate. Thanks!'
+    });
+    })
+  }
+
   $scope.updatePolish = function( ){
     $state.go('tabsController.addPolish');
   }
  })
 
 // Profile controller
-.controller('profileCtrl', function ($scope) {
+.controller('profileCtrl', function ($scope, $cookies, drupal, CONSTANTS, $ionicPopup, $state, UserService) {
+  $scope.publicProfile = true;
+  $scope.following = false;
+  $scope.data = {};
+  var target_uid;
+  if($cookies.get("uid") === $cookies.currentUser.uid){
+    $scope.ownProfile = true;
+  }else{
+    $scope.ownProfile = false;
+  }
 
+  $scope.reset = function (){
+    drupal.user_load($cookies.get("uid")).then(function(account) {
+      $cookies.currentUser = account;
+      $scope.loadUser();
+      $state.go('tabsController.profile', {}, {reload: true});
+    })
+  }
+
+  $scope.loadUser = function(){
+   drupal.user_load($cookies.currentUser.uid).then(function(account) {
+     $cookies.currentUser = account;
+     $scope.currentUser = account;
+      if($cookies.following.indexOf($scope.currentUser) === -1 ) {
+        $scope.following = true;
+      }else{
+        $scope.following = false;
+      }
+
+      if(account.picture === null){
+        $scope.currentUser.picture = CONSTANTS.BASE_URL + "/sites/default/files/avatars/default_user.png"
+      }else{
+        $scope.currentUser.picture = account.picture.url;
+      }
+      if(account.field_user_website.und){
+        $scope.currentUser.website = account.field_user_website.und[0].url;
+        $cookies.currentUser.website = account.field_user_website.und[0].url;
+      }
+      $scope.currentUser.username = account.name;
+      if(account.field_first_name.und){
+        $scope.currentUser.firstName = account.field_first_name.und[0].value;
+      }
+      if(account.field_biography.und){
+        $scope.currentUser.bio = account.field_biography.und[0].value;
+      }else if (!account.field_biography.und && $scope.ownProfile){
+        $scope.currentUser.bio = "Your bio is empty. Tap on 'Edit Profile' below in order to change that!";
+      }else{
+        $scope.currentUser.bio = "It looks like " + $scope.currentUser.username + " either doesn't want to put up a bio, or they haven't yet. That's fine. You can still follow them if you'd like!";
+      }
+    })
+ }
+
+ $scope.loadUser();
+
+   $scope.showAlert = function() {
+    loadPopup = $ionicPopup.show({
+       title: 'Updating',
+       template: 'Please wait one moment, we\'re updating your profile! <br/> <ion-spinner align="center"></ion-spinner>',
+       buttons: null
+    });
+  }
+
+   $scope.editProfile = function (data){
+    if($scope.editMode){
+      $scope.showAlert();
+      // Submit changes
+      var acct = {
+        uid: data.uid,
+        name: data.username,
+        field_first_name: { "und": [{ "value": data.firstName }] },
+        field_biography: { "und": [{ "value": data.bio }] },
+        field_user_website: { "und": [{ "url": data.website }] }
+      };
+      if(data.newPic){
+          var type = data.newPic.filetype.substring(data.newPic.filetype.indexOf("/") + 1);
+          var name = data.newPic.filename.replace(/\.[^/.]+$/, "");
+          var pic64 = {
+            file:data.newPic.base64,
+            filename:name+type,
+            filepath:"public://avatars/"+name+"."+type
+          }
+          saveImage = drupal.file_save(pic64, $cookies.get("Cookie")).then(function (f) {
+           // var addFile = { picture: { "und": [{ "fid": f.fid }] } };
+           var addFile = { picture_upload: f.fid };
+              angular.extend(acct, addFile );
+              drupal.user_save(acct, $cookies.get("Cookie")).then(function(result) {
+                  $scope.editMode = false;
+                  $state.go('tabsController.profile', {}, {reload: true});
+                  loadPopup.close();
+              });
+        })
+      }
+      else{
+      drupal.user_save(acct, $cookies.get("Cookie")).then(function(result) {
+          $scope.editMode = false;
+          $state.go('tabsController.profile', {}, {reload: true});
+          loadPopup.close();
+      });
+      }
+    }else{
+      $scope.editMode = true;
+    }
+   }
+
+   $scope.cancel = function () {
+    $scope.editMode = false;
+    $scope.currentUser.username = $cookies.currentUser.name;
+    $scope.currentUser.website = $cookies.currentUser.website;
+    $scope.currentUser.firstName = $cookies.currentUser.field_first_name.und[0].value;
+    $scope.currentUser.bio = $cookies.currentUser.field_biography.und[0].value;
+   }
+
+   $scope.goToRack = function(){
+    $state.go('tabsController.otherRack');
+   }
+
+   $scope.goToWishList = function(){
+    $state.go('tabsController.otherWish');
+   }
+
+   $scope.followPopup = function (){
+      followPopup = $ionicPopup.show({
+       title: 'Updating',
+       template: 'Please wait one moment, we\'re updating your flag! <br/> <ion-spinner align="center"></ion-spinner>',
+       buttons: null
+    });
+   }
+
+   $scope.follow = function(){
+    $scope.followPopup();
+    if($scope.following){
+      UserService.unfollowUser($cookies.get("uid"), $cookies.currentUser.uid).then( function(result){
+        $scope.following = false;
+        followPopup.close();
+      })
+    }else {
+      UserService.followUser($cookies.get("uid"), $cookies.currentUser.uid).then( function(result){
+        $scope.following = true;
+        followPopup.close();
+      })
+    }
+  }
  })
 
 // Following controller
-.controller('friendsCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
+.controller('friendsCtrl', function ($cookies, $scope, CONSTANTS, drupal, $state) {
+  $scope.following = $cookies.following;
+  if($scope.following){
+      $scope.noFriends = false;
+    }else{
+      $scope.noFriends = true;
+    }
 
+  $scope.goUser = function (user) {
+    $cookies.currentUser = user;
+    $state.go('tabsController.profile');
+  }
 
-}])
+  $scope.search = function(name){
+    $cookies.searchName = name.searchUser;
+    $state.go('tabsController.users');
+  }
+
+  $scope.viewUsers = function (){
+    $state.go('tabsController.users');
+  }
+})
+
+// All users tab
+.controller('usersCtrl', function ($cookies, $scope, CONSTANTS, drupal, $state) {
+  $scope.users = $cookies.allUsers;
+
+  $scope.goUser = function (user) {
+    $cookies.currentUser = user;
+    $state.go('tabsController.profile');
+  }
+})
 
 // Chat controller
-.controller('chatCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
+.controller('chatCtrl', function ($scope, $stateParams) {
 
 
-}])
+})
 
 // About controller
-.controller('aboutCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
-
-
-}])
+.controller('aboutCtrl', function () { })
 
 // Database controller
 .controller('browseCtrl', function ($scope, $state, $cookies, SessionService, $ionicScrollDelegate, $ionicPopup, PolishService) {
@@ -325,6 +530,49 @@ $scope.reset_form = function(){
   }
 })
 
+// Other Rack controller
+.controller('otherRackCtrl', function ($scope, $cookies, $state, drupal, SessionService, $ionicScrollDelegate) {
+  $scope.curName = $cookies.currentUser.name;
+  drupal.views_json("user/" + $cookies.currentUser.uid + "/my-rack").then(function(nodes) {
+    $scope.other_polishes = nodes;
+    if($scope.other_polishes.length){
+        $scope.hasRack = true;
+      }else{
+        $scope.hasRack = false;
+      }
+  });
+
+  $scope.openPolish = function(polish){
+    SessionService.setCurrentPolish(angular.copy(polish));
+    $state.go('tabsController.polish');
+  }
+
+  $scope.scrollUp = function(){
+    $ionicScrollDelegate.scrollTop();
+  }
+})
+
+// Other Wish controller
+.controller('otherWishCtrl', function ($scope, $cookies, $state, drupal, SessionService, $ionicScrollDelegate) {
+  $scope.curName = $cookies.currentUser.name;
+  drupal.views_json("user/" + $cookies.currentUser.uid + "/wish-list").then(function(nodes) {
+    $scope.other_polishes = nodes;
+      if($scope.other_polishes.length){
+        $scope.hasWish = true;
+      }else{
+        $scope.hasWish = false;
+      }
+  });
+
+  $scope.openPolish = function(polish){
+    SessionService.setCurrentPolish(angular.copy(polish));
+    $state.go('tabsController.polish');
+  }
+
+  $scope.scrollUp = function(){
+    $ionicScrollDelegate.scrollTop();
+  }
+})
 
 // My Rack controller
 .controller('myRackCtrl', function ($state, $scope, drupal, $cookies, SessionService, $ionicScrollDelegate) {
@@ -459,7 +707,7 @@ $scope.reset_form = function(){
 
   $scope.fill = function(){
     $scope.data.pName = $cookies.currentPolish.title;
-    $scope.data.pBrand = $cookies.currentPolish.Brand;
+    $scope.data.selBrand = $cookies.currentPolish.Brand;
     $scope.data.pCollection = $cookies.currentPolish.Collection;
     $scope.data.pFinish = $cookies.currentPolish.Finish;
     $scope.data.pYear = $cookies.currentPolish.Year;
@@ -550,7 +798,9 @@ $scope.reset_form = function(){
     var newPol = {};
 
     if($cookies.currentPolish){
-      node.nid = $cookies.currentPolish.nid;
+      if($cookies.currentPolish.uid == $cookies.get("uid")){
+        node.nid = $cookies.currentPolish.nid;
+      }
     }
 
     if(polish.pSwatch){
@@ -573,6 +823,9 @@ $scope.reset_form = function(){
 
     $scope.saveNode = function(node, polish){
       drupal.node_save(node, $cookies.get("Cookie")).then(function(data) {
+        if(data.status == 403){
+
+        }
       // Update all the lists to reflect the new polish
       $cookies.myRack = null;
       $cookies.myWishList = null;

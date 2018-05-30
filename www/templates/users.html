@@ -1,0 +1,11 @@
+<ion-view title="Users" id="users" class="page">
+    <ion-content padding="true" class="has-header">
+      <button class="custom_button" ng-click="search(data)">Search Users</button>
+      <table>
+      <tr ng-repeat="user in users | orderBy:'toString()'" ng-click="goUser(user)">
+          <td class="swatchCol"><img class="thumbnail" ng-src="{{user.picture}}"/></td>
+          <td class="friendsList">{{user.name}}</td>
+      </tr>
+    </table>
+    </ion-content>
+  </ion-view>

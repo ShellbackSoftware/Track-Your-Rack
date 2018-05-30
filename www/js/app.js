@@ -55,6 +55,7 @@ angular
   })
 
   .state('tabsController.profile', {
+    cache: false,
     url: '/profile',
     views: {
       'profileTab': {
@@ -65,11 +66,23 @@ angular
   })
 
   .state('tabsController.friends', {
+    cache: false,
     url: '/friends',
     views: {
       'friendsTab': {
         templateUrl: 'templates/friends.html',
         controller: 'friendsCtrl'
+      }
+    }
+  })
+
+  .state('tabsController.users', {
+    cache: false,
+    url: '/users',
+    views: {
+      'friendsTab': {
+        templateUrl: 'templates/users.html',
+        controller: 'usersCtrl'
       }
     }
   })
@@ -160,6 +173,28 @@ angular
     }
   })
 
+.state('tabsController.otherWish', {
+    cache: false,
+    url: '/otherRack',
+    views: {
+      'homeTab': {
+        templateUrl: 'templates/otherWish.html',
+        controller: 'otherWishCtrl'
+      }
+    }
+  })
+
+  .state('tabsController.otherRack', {
+    cache: false,
+    url: '/otherRack',
+    views: {
+      'homeTab': {
+        templateUrl: 'templates/otherRack.html',
+        controller: 'otherRackCtrl'
+      }
+    }
+  })
+
   .state('loading', {
     cache: false,
     url: '/loading',
@@ -175,6 +210,7 @@ angular
   })
 
   .state('signup', {
+    cache: false,
     url: '/signup',
     templateUrl: 'templates/signup.html',
     controller: 'signupCtrl'

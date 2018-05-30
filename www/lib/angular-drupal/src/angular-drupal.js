@@ -202,6 +202,51 @@ function drupal($http, $q, drupalSettings, drupalToken) {
     });
   };
 
+ // FLAG USER
+  this.flag_user = function(user, target, cookie) { 
+    var options = {
+      method: 'POST',
+      cache : false,
+      url: this.restPath + '/flag/flag.json',
+      headers: { 'Content-Type': 'application/json',
+                  'Authentication': cookie },
+      data: {
+              'flag_name': user.flag_name,
+              'action': user.action,
+              'uid' : user.uid,   // Logged in user
+              'entity_id': target // User to be followed
+            }
+    };
+    return this.token().then(function(token) {
+        options.headers['X-CSRF-Token'] = token;
+        return $http(options).then(function(result) {
+            if (result.status == 200) { return result.data; }
+        });
+    });
+  };
+
+  // FLAG NODE
+  this.flag_node = function(node, cookie) {
+    var options = {
+      method: 'POST',
+      cache : false,
+      url: this.restPath + '/flag/flag.json',
+      headers: { 'Content-Type': 'application/json',
+                  'Authentication': cookie },
+      data: { node: node,
+              'flag_name': node.flag_name,
+              'action': node.action,
+              'entity_id': node.nid
+            }
+    };
+    return this.token().then(function(token) {
+        options.headers['X-CSRF-Token'] = token;
+        return $http(options).then(function(result) {
+            if (result.status == 200) { return result.data; }
+        });
+    });
+  };
+
   // ENTITY SAVE FUNCTIONS
 
   // COMMENT SAVE
@@ -272,6 +317,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
     return this.token().then(function(token) {
         options.headers['X-CSRF-Token'] = token;
         return $http(options).then(function(result) {
+            if(result.status == 403) { return result; }
             if (result.status == 200) { return result.data; }
         });
     });
@@ -330,7 +376,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
   };
 
   // USER SAVE
-  this.user_save = function(account) {
+  this.user_save = function(account, cookie) {
     var method = null;
     var url = null;
     if (!account.uid) {
@@ -345,7 +391,8 @@ function drupal($http, $q, drupalSettings, drupalToken) {
       method: method,
       url: url,
       cache : false,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json',
+                  'Authentication': cookie },
       data: account // don't wrap users
     };
     return this.token().then(function(token) {

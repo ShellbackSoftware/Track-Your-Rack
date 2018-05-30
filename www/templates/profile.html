@@ -1,12 +1,44 @@
 <ion-view title="Profile" id="profile" class="page">
   <ion-content padding="true" class="has-header">
-    <p> Avatar </p>
-    <p> Name </p>
-    <p> Bio </p>
-      <p>TODO: Ability to have public/private profile; button to friend's rack / wish list that says "check out $name's rack / wish list"</p>
-    <p>TODO: Hide button for own profile</p>
-    <button id="viewRack" style="display:block;" class="button button-dark" disabled>Check Out $user's Rack</button>
-    <button style="text-align:left;" class="button button-dark" disabled>Follow</button>
-    <button class="button button-dark" disabled>Unfollow</button>
+    <div ng-if="!publicProfile">
+      <p>It appears that {{currentUser.username}}'s profile is set to private.</p>
+    </div>
+    <div ng-if="publicProfile">
+    <input type="text" style="font-size:1.6em;" ng-model="currentUser.username" class="userBox" ng-disabled="!editMode">
+    <img class="pPreview" ng-src="{{currentUser.picture}}"/>
+
+    <div ng-if="editMode" id="fileUpload">
+      <label><input type="file" ng-model="currentUser.newPic" name="picbox" base-sixty-four-input accept="image/*">
+      <span style="width: 50%;">Change Profile Picture</span></label>
+      File Name (You can change it if you like!)<input type="textarea" ng-model="currentUser.newPic.filename" class="inputBox">
+    </div>
+
+    <input type="text" ng-model="currentUser.firstName" class="userBox" ng-disabled="!editMode">
+    <textarea class="user_bio" ng-model="currentUser.bio" ng-disabled="!editMode" id="bio"> </textarea>
+    <a href="{{currentUser.website}}" ng-model="currentUser.website" ng-if="!editMode">{{currentUser.website}}</a>
+      <input type="text" ng-model="currentUser.website" placeholder="Website" ng-if="editMode" style="width:60%;">
+    <div class="clearfix"></div>
+    <!-- Own profile -->
+    <div ng-show="ownProfile">
+      <button class="left_button" ng-click="editProfile(currentUser)">
+       <span ng-show="!editMode">Edit Profile</span>
+       <span ng-show="editMode">Submit</span>
+       </button>
+       <button class="right_button" ng-show="editMode" ng-click="cancel()">
+       <span >Cancel</span>
+       </button>
+    </div>
+    <!-- Someone else's profile -->
+    <div ng-show="!ownProfile">
+      <button class="left_button" ng-click="goToRack(currentUser.uid)">Check Out {{currentUser.name}}'s Rack</button>
+      <button class="right_button" ng-click="goToWishList(currentUser.uid)">Check Out {{currentUser.name}}'s Wish List</button>
+      <button class="left_button profile_button" ng-click="follow(currentUser.uid)" ng-disabled="dataSent">
+        <span ng-show="following">Unfollow</span>
+      <span ng-show="!following">Follow</span>
+    </button>
+    <button class="right_button profile_button" ng-click="sendMessage(currentUser)">Send {{currentUser.name}} a Message</button>
+    <button class="all_button" ng-click=reset()>Back To My Profile</button>
+    </div>
+  </div>
   </ion-content>
 </ion-view>

@@ -1,0 +1,20 @@
+<!-- When you go to someone else's Rack -->
+<ion-view title="Rack" id="otherRack" class="page">
+  <ion-content padding="true" class="has-header">
+    <p>You are currently viewing {{curName}}'s rack.</p>
+    <p ng-if="!hasWish"> ... And it looks like {{curName}} doesn't have anything! That, or they haven't filled out their rack yet.</p>
+    <table ng-if="hasRack">
+    <tr>
+        <th class="swatchCol">Swatch</th>
+        <th>Name</th>
+        <th>Brand</th>
+    </tr>
+    <tr ng-repeat="polish in other_polishes" ng-click="openPolish(polish)">
+        <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
+        <td>{{polish.title}}</td>
+        <td>{{polish.Brand}}</td>
+    </tr>
+  </table>
+  <button ng-if="hasRack" class="all_button" ng-click="scrollUp()">Return To Top</button>
+  </ion-content>
+</ion-view>
