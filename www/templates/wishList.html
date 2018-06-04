@@ -1,10 +1,10 @@
 <ion-view title="Wish List" id="wishList" class="page">
   <ion-content padding="true" class="has-header">
-    <button id="wishList-button5" class="button button-dark button-block" disabled="true">Share This List</button>
+    <button class="all_button" style="margin-bottom:10px;" ng-click="shareWish()">Share Your Wish List</button>
    <div>
-      <input type="textarea" placeholder="Color" class="inputBox"><button disabled="true">Search</button>
+      <input type="textarea" placeholder="Polish Name" class="searchBox" ng-model="wquery"><button class="search_button" ng-click="searchWish(wquery)">Search Wish List</button>
   </div>
-
+<div class="clearfix"></div>
   <form name="form.wishList">
     <p>Filter options:</p>
     <select class="dropdown" ng-model="data.selectedBrand">

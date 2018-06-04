@@ -1,15 +1,20 @@
 <ion-view title="Friends" id="friends" class="page">
   <ion-content padding="true" class="has-header">
-    <input type="textbox" class="searchBox" ng-model="data.searchUser">
-    <button class="custom_button" ng-click="search(data)">Search Friends</button> <p style="float:left; margin-right:10px;">or</p> 
+    <div>
+    <input type="textarea" class="searchBox" ng-model="fquery" placeholder="Username">
+    <button class="custom_button" ng-click="searchFriends(fquery)">Search Friends</button> <p style="float:left; margin-right:10px;">or</p> 
     <button class="custom_button" ng-click="viewUsers()">Browse All Users</button>
-    <br /> <br /> <br />
-    <table>
+    <button class="all_button" style="margin-top:10px;" ng-click="resetFriends()" ng-if="search">Reset List</button>
+    </div>
+    <div class="clearfix"></div>
+    <p ng-if="!results"> No results from your search! </p>
     <p ng-if="noFriends"> Looks like you don't have any friends. Why not search for some? </p>
-    <tr ng-if="!noFriends" ng-repeat="user in following | orderBy:'toString()'" ng-click="goUser(user)">
+    <table ng-if="!noFriends">
+    <tr ng-repeat="user in following | orderBy:'toString()'" ng-click="goUser(user)">
         <td class="swatchCol"><img class="thumbnail" ng-src="{{user.picture}}"/></td>
         <td class="friendsList">{{user.name}}</td>
     </tr>
   </table>
+  <button ng-if="!noFriends" class="all_button" ng-click="scrollUp()">Return To Top</button>
   </ion-content>
 </ion-view>

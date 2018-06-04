@@ -173,7 +173,7 @@ function drupal($http, $q, drupalSettings, drupalToken) {
     });
   };
 
-  this.user_load = function(uid) {
+  this.user_load = function(uid) { 
     return $http.get(this.restPath + '/user/' + uid + '.json').then(function(result) {
         if (result.status == 200) { return result.data; }
     });

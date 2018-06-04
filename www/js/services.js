@@ -26,8 +26,13 @@ angular
        };
      return $q.all([
           drupal.flag_user(user, targetID, $cookies.get("Cookie")).then(function(result) {    }),
-          drupal.user_load(targetID).then(function(res) {
-              $cookies.following.push(angular.copy(res[0]));
+          drupal.user_load(targetID).then(function(res) { 
+            if(res.picture == null){
+              res.picture = CONSTANTS.BASE_URL + "/sites/default/files/avatars/default_user.png";
+            }else if(angular.isObject(res.picture)){
+              res.picture = res.picture.url;
+            }
+              $cookies.following.push(angular.copy(res));
             })
           ]).then(function(results) {  })
     },
@@ -40,7 +45,7 @@ angular
       action:"unflag"
     };
       return drupal.flag_user(user, targetID, $cookies.get("Cookie")).then(function(result) {
-        pIndex = $cookies.following.findIndex(x=>x.uid === userID);
+        pIndex = $cookies.following.findIndex(x=>x.uid === targetID);
         $cookies.following.splice(pIndex, 1);
       })
     }

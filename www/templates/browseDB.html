@@ -1,10 +1,9 @@
 <ion-view title="Polish Database" id="browseDB" class="page">
   <ion-content padding="true" class="has-header">
     <div id="top">
-      <p><strong>TODO: Implement search</strong></p>
-      <input type="textarea" placeholder="Brand, color, or collection" class="searchBox" ng-model="data.searchTerm"><button class="search_button" ng-click="searchDB(data)" disabled="true">Search</button>
+      <input type="textarea" placeholder="Brand, color, or collection" class="searchBox" ng-model="dbquery"><button class="search_button" ng-click="searchDB(dbquery)">Search All Polishes</button>
   </div>
-  <br/>
+  <div class="clearfix"></div>
 <form name="form.database">
   Filter options:
     <select class="dropdown" ng-model="data.selectedBrand">

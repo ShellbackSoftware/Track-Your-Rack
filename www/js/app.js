@@ -125,7 +125,7 @@ angular
   })
 
   .state('tabsController.myRack', {
-    cache: false,
+    //cache: false,
     url: '/myrack',
     views: {
       'homeTab': {
@@ -158,8 +158,12 @@ angular
 
   .state('scannerPopup', {
     url: '/scanner',
-    templateUrl: 'templates/scannerPopup.html',
-    controller: 'scannerPopupCtrl'
+    views:{
+      'homeTab': {
+        templateUrl: 'templates/scannerPopup.html',
+        controller: 'scannerPopupCtrl'
+      }
+    }
   })
 
   .state('tabsController.addPolish', {
@@ -177,7 +181,7 @@ angular
     cache: false,
     url: '/otherRack',
     views: {
-      'homeTab': {
+      'profileTab': {
         templateUrl: 'templates/otherWish.html',
         controller: 'otherWishCtrl'
       }
@@ -188,7 +192,7 @@ angular
     cache: false,
     url: '/otherRack',
     views: {
-      'homeTab': {
+      'profileTab': {
         templateUrl: 'templates/otherRack.html',
         controller: 'otherRackCtrl'
       }

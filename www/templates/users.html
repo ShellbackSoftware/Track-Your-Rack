@@ -1,11 +1,16 @@
 <ion-view title="Users" id="users" class="page">
     <ion-content padding="true" class="has-header">
-      <button class="custom_button" ng-click="search(data)">Search Users</button>
-      <table>
-      <tr ng-repeat="user in users | orderBy:'toString()'" ng-click="goUser(user)">
-          <td class="swatchCol"><img class="thumbnail" ng-src="{{user.picture}}"/></td>
-          <td class="friendsList">{{user.name}}</td>
+        <div>
+            <input type="textarea" class="searchBox" ng-model="uquery" placeholder="Username"/>
+      <button class="search_button" ng-click="searchUsers(uquery)">Search Users</button>
+      <button class="all_button" ng-click="resetUsers()" style="margin-top:10px;" ng-if="search">Reset List</button>
+      </div>
+      <table style="margin-top:10px;">
+      <tr ng-repeat="u in allUsers | orderBy:'toString()'" ng-click="goUser(u)">
+          <td class="swatchCol"><img class="thumbnail" ng-src="{{u.picture}}"/></td>
+          <td class="friendsList">{{u.username}}</td>
       </tr>
     </table>
+    <button class="all_button" ng-click="scrollUp()">Return To Top</button>
     </ion-content>
   </ion-view>

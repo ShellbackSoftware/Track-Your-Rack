@@ -1,6 +1,7 @@
 <ion-view title="My Rack" id="myrack" class="page">
   <ion-content padding="true" class="has-header">
     <div>
+        <button class="all_button" ng-click="shareRack()">Share Your Rack</button>
       <p>Not sure what color to paint your nails? </p>
       <button ng-click="spinWheel()" class="custom_button">Try Your Luck!</button>
       <input type="textarea" class="randomBox" ng-value="randomPolish" disabled> <div class="clearfix"></div>
@@ -9,11 +10,11 @@
     </div>
     <div class="clearfix"></div> <br/>
     <div>
-      <input type="textarea" placeholder="Search For A Color" class="searchBox"><button disabled="true">Search</button>
+      <input type="textarea" placeholder="Polish Name" class="searchBox" ng-model="rquery"><button class="search_button" ng-click="searchRack(rquery)">Search Rack</button>
   </div>
-  <br/>
+  <div class="clearfix"></div>
   <p>You have {{numBrands}} different brands, and {{rackPolishes}} total polishes.</p>
-  <p ng-if="currentBrand">You have {{brandPolishes}} of {{sel_brand}}</p>
+  <p ng-if="currentBrand && byBrand">You have {{brandPolishes}} of {{sel_brand}}</p>
     <form name="form.myRack">
     <p>Filter options:</p>
     <select class="dropdown" ng-model="data.selectedBrand">
