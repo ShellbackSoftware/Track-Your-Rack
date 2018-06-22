@@ -1,33 +1,58 @@
 angular.module('app.controllers', [])
 
 // Home controller
-.controller('homeCtrl', function ($scope, $cookies) {
+.controller('homeCtrl', function ($scope, $cookies, User, DataInterceptor) {
   $scope.username = $cookies.get("username");
+ /* User.get($cookies.get("uid")).then(function (u){
+    $cookies.currentUser = u;
+  })*/
+  DataInterceptor.fillData();
+  console.log($cookies.currentUser);  
   $cookies.currentPolish = null;
 })
 
 // Loading screen
-.controller('loadCtrl', function ($scope,$state, $q, $cookies, drupal, CONSTANTS){
-  $scope.status = "loading your rack";
+.controller('loadCtrl', function ($scope,$state, $q, $cookies, drupal, CONSTANTS, User, Polish, DataInterceptor){
+  $scope.status = "Getting your Rack";
+  $cookies.following = [];
     $q.all([
+      // Get user's rack
       drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
         $cookies.myRack = nodes;
-        $scope.status = "loading your wish list";
+        $scope.status = "Getting your Wish List";
       }),
+      // Get user's wish list
       drupal.views_json("user/" + $cookies.get("uid") + "/wish-list").then(function(nodes) {
         $cookies.myWishList = nodes;
-        $scope.status = "loading the master list of polishes";
+        $scope.status = "Populating the master list of polishes";
       }),
+      // Populate the SQLite table
       drupal.views_json("tyr/all-polish").then(function(nodes) {
-        $cookies.allPolishes = nodes;
-        $scope.status = "loading your account";
+        $cookies.allPolishes = nodes; 
+        nodes.forEach(function (p){
+          var inRack = false;
+          var inWishList = false;
+          var isCurrent = false;
+          // Fill in the SQLite Polishes table
+          var finRack = $cookies.myRack.filter(function(c) {
+            return c.title === p.title;
+          }); 
+          if(finRack.length > 0){
+            inRack = true;
+          }
+          var finWishList = $cookies.myWishList.filter(function(c) {
+            return c.title === p.title;
+          });
+        
+          if(finWishList.length > 0){
+            inWishList = true;
+          }
+          Polish.add(p, inRack, inWishList, isCurrent);
+        })
+        $scope.status = "Figuring out who you're following"
       }),
-      drupal.user_load($cookies.get("uid")).then(function(account) {
-        $cookies.currentUser = account;
-        $scope.status = "loading your friends list";
-      }),
-      drupal.views_json("user/" + $cookies.get("uid") + "/following").then(function(list) {
-        $cookies.following = []; 
+      // Get list of people user is following
+      drupal.views_json("user/" + $cookies.get("uid") + "/following").then(function(list) { 
         list.forEach(function (c){ 
           drupal.user_load(c.uid).then(function(res) { 
             if(res.uid !== $cookies.get("uid")){
@@ -40,19 +65,40 @@ angular.module('app.controllers', [])
           }
           })
         })
-        $scope.status = "loading the list of all users";
+        $scope.status = "Loading your profile";
       }),
+      drupal.user_load($cookies.get("uid")).then(function(account) {
+        $cookies.currentUser = account;
+        $scope.status = "Populating user list";
+      }),
+      // Populate SQLite with users & if the user is following them or not
       drupal.views_json("user/all-users").then(function(users) {
         $cookies.allUsers = users;
-        $cookies.allUsers.forEach(function (u){ 
+        users.forEach(function (u){ 
+          var follow = false;
           if(u.picture == ""){ 
-          u.picture = CONSTANTS.BASE_URL + "/sites/default/files/avatars/default_user.png"
+            u.picture = CONSTANTS.BASE_URL + "/sites/default/files/avatars/default_user.png"
           }else{
             u.picture = u.picture;
           }
+          if($cookies.following.length){
+            var following = $cookies.following.filter(function(c) {
+              return c.uid === u.uid;
+            }); 
+            if(following.length > 0){
+              follow = true; console.log(u.username);
+            }
+          }
+          if(u.uid === $cookies.get("uid")){ 
+            User.add(u, follow, $cookies.get("Cookie"));
+          }else{
+            User.add(u, follow,  "");
+          }
         })
+        $scope.status = "Populating local storage";
+        // Fill local storage
+        DataInterceptor.fillData();
       })
-
     ]).then(function(results) {
       $state.go('tabsController.home', {}, {reload: true});
     })
@@ -999,15 +1045,22 @@ $scope.reset_form = function(){
 })
 
 // Login controller
-.controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window, $location, UserService) {
+.controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window, $location, UserService, User) {
 $scope.data = {};
 $scope.dataSent = false;
 var loginPopup;
 
-if($cookies.get("Cookie")){
-    SessionService.clearCookieData();
-    $window.location.reload(true);
-}
+// Check if user is already logged in
+User.getAllUsers().then(function (users){
+  if(users.length){
+    users.forEach(function (u) {
+      if(u.token){
+        $cookies.currentUser = u;
+        $state.go('tabsController.home', {}, {reload: true});
+      }
+    })
+  }
+})
 
   $scope.resetPassword = function(){
     $scope.data = {};
@@ -1108,7 +1161,7 @@ if($cookies.get("Cookie")){
 })
 
 // Logout controller
-.controller('logoutCtrl', function ($scope, $state, drupal, SessionService, $cookies, $ionicPopup, $window) {
+.controller('logoutCtrl', function ($scope, $state, drupal, SessionService, $cookies, $ionicPopup, $window, Polish, User, $timeout) {
   $scope.showLogout = function() {
     logoutPopup = $ionicPopup.alert({
        title: 'Logging Out',
@@ -1117,10 +1170,23 @@ if($cookies.get("Cookie")){
     });
   }
 
-    $scope.logout = function() {
+  // This fires when we get a bad result from logout
+ var forceClose = function () {
+  SessionService.clearCookieData();
+  Polish.drop();
+  User.drop();
+  logoutPopup.close();
+  $state.go('login', {}, {reload: true});
+  $window.location.reload(true);
+  }
+
+  $scope.logout = function() {
     $scope.showLogout();
+    $timeout(forceClose, 8000);
       drupal.user_logout($cookies.get("Cookie")).then(function (res) {
         SessionService.clearCookieData();
+        Polish.drop();
+        User.drop();
         logoutPopup.close();
         $state.go('login', {}, {reload: true});
         $window.location.reload(true);
