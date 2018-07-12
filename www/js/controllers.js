@@ -1,105 +1,67 @@
 angular.module('app.controllers', [])
 
 // Home controller
-.controller('homeCtrl', function ($scope, $cookies, User, DataInterceptor) {
-  $scope.username = $cookies.get("username");
- /* User.get($cookies.get("uid")).then(function (u){
-    $cookies.currentUser = u;
-  })*/
-  DataInterceptor.fillData();
-  console.log($cookies.currentUser);  
-  $cookies.currentPolish = null;
+.controller('homeCtrl', function ($scope, $cookies, SessionService, DataService) {
+  DataService.fillData().then(function (f) { 
+   // $scope.username = $cookies.currentUser.username;
+  })
+
+  if($cookies.currentPolish){
+    SessionService.clearCurrentPolish();
+  } 
 })
 
 // Loading screen
-.controller('loadCtrl', function ($scope,$state, $q, $cookies, drupal, CONSTANTS, User, Polish, DataInterceptor){
-  $scope.status = "Getting your Rack";
-  $cookies.following = [];
+.controller('loadCtrl', function ($scope,$state, $q, drupal, $cookies, CONSTANTS, User, Polish){
+  $scope.status = "Populating the polish lists";
     $q.all([
-      // Get user's rack
-      drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
-        $cookies.myRack = nodes;
-        $scope.status = "Getting your Wish List";
-      }),
-      // Get user's wish list
-      drupal.views_json("user/" + $cookies.get("uid") + "/wish-list").then(function(nodes) {
-        $cookies.myWishList = nodes;
-        $scope.status = "Populating the master list of polishes";
-      }),
-      // Populate the SQLite table
+      // Get all polishes
       drupal.views_json("tyr/all-polish").then(function(nodes) {
-        $cookies.allPolishes = nodes; 
+        $cookies.allPolishes = nodes;
         nodes.forEach(function (p){
-          var inRack = false;
-          var inWishList = false;
-          var isCurrent = false;
-          // Fill in the SQLite Polishes table
-          var finRack = $cookies.myRack.filter(function(c) {
-            return c.title === p.title;
-          }); 
-          if(finRack.length > 0){
-            inRack = true;
-          }
-          var finWishList = $cookies.myWishList.filter(function(c) {
-            return c.title === p.title;
-          });
-        
-          if(finWishList.length > 0){
-            inWishList = true;
-          }
-          Polish.add(p, inRack, inWishList, isCurrent);
+          Polish.add(p,false,false,false);
         })
-        $scope.status = "Figuring out who you're following"
-      }),
-      // Get list of people user is following
-      drupal.views_json("user/" + $cookies.get("uid") + "/following").then(function(list) { 
-        list.forEach(function (c){ 
-          drupal.user_load(c.uid).then(function(res) { 
-            if(res.uid !== $cookies.get("uid")){
-              if(res.picture === null){
-              res.picture = CONSTANTS.BASE_URL + "/sites/default/files/avatars/default_user.png"
-              }else{
-                res.picture = res.picture.url;
-              } 
-            $cookies.following.push(res);
-          }
+        // Update Rack in SQL
+        drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
+          $cookies.myRack = nodes;
+          nodes.forEach(function (p) { 
+            Polish.update(p.nid,'inRack', 'true');
+          })
+          $scope.status = "Getting your Wish List";
+        })
+        // Update Wish List in SQL
+        drupal.views_json("user/" + $cookies.get("uid") + "/wish-list").then(function(nodes) {
+          $cookies.myWishList = nodes;
+          nodes.forEach(function (p) { 
+            Polish.update(p.nid,'inWish', 'true');
           })
         })
-        $scope.status = "Loading your profile";
+        $scope.status = "Populating User lists";
       }),
-      drupal.user_load($cookies.get("uid")).then(function(account) {
-        $cookies.currentUser = account;
-        $scope.status = "Populating user list";
-      }),
-      // Populate SQLite with users & if the user is following them or not
+
+      // Get all users 
       drupal.views_json("user/all-users").then(function(users) {
         $cookies.allUsers = users;
-        users.forEach(function (u){ 
-          var follow = false;
-          if(u.picture == ""){ 
-            u.picture = CONSTANTS.BASE_URL + "/sites/default/files/avatars/default_user.png"
+        users.forEach(function (u) {
+          if(u.uid == $cookies.get("uid")){
+            User.add(u, false, $cookies.get("Cookie"))
+            $cookies.currentUser = u;
           }else{
-            u.picture = u.picture;
-          }
-          if($cookies.following.length){
-            var following = $cookies.following.filter(function(c) {
-              return c.uid === u.uid;
-            }); 
-            if(following.length > 0){
-              follow = true; console.log(u.username);
-            }
-          }
-          if(u.uid === $cookies.get("uid")){ 
-            User.add(u, follow, $cookies.get("Cookie"));
-          }else{
-            User.add(u, follow,  "");
+            User.add(u, false,' ');
           }
         })
-        $scope.status = "Populating local storage";
-        // Fill local storage
-        DataInterceptor.fillData();
-      })
-    ]).then(function(results) {
+
+        // Get list of users that the logging in user is following
+        drupal.views_json("user/" + $cookies.get("uid") + "/following").then(function(list) { 
+          $cookies.following = list;
+          list.forEach(function (p) { 
+            User.update(p.uid, 'following', true);
+          })
+        })
+      }) 
+      
+    // Local storage is filled, time to move on
+    ]).then(function( ) {
       $state.go('tabsController.home', {}, {reload: true});
     })
 })
@@ -726,7 +688,7 @@ $scope.reset_form = function(){
 })
 
 // My Rack controller
-.controller('myRackCtrl', function ($state, $scope, drupal, $cookies, SessionService, $ionicScrollDelegate, CONSTANTS, $ionicPopup) {
+.controller('myRackCtrl', function ($state, $scope, $cookies, SessionService, $ionicScrollDelegate, CONSTANTS, $ionicPopup) {
   $scope.currentBrand = false;
   $scope.byBrand = false;
   $scope.fil_polishes = [];
@@ -1045,22 +1007,20 @@ $scope.reset_form = function(){
 })
 
 // Login controller
-.controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window, $location, UserService, User) {
-$scope.data = {};
-$scope.dataSent = false;
-var loginPopup;
+.controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window, UserService, User, DataService) {
+  $scope.data = {};
+  $scope.dataSent = false;
+  var loginPopup;
 
-// Check if user is already logged in
-User.getAllUsers().then(function (users){
-  if(users.length){
-    users.forEach(function (u) {
-      if(u.token){
-        $cookies.currentUser = u;
+  // Check if user is already logged in
+  User.getAllUsers().then(function (users){
+    if(users.length){
+      $scope.refillingData();
+      DataService.fillData().then(function () {
         $state.go('tabsController.home', {}, {reload: true});
-      }
-    })
-  }
-})
+      })
+    }
+  })
 
   $scope.resetPassword = function(){
     $scope.data = {};
@@ -1119,6 +1079,14 @@ User.getAllUsers().then(function (users){
     loginPopup = $ionicPopup.alert({
       title: 'Login failed!',
       template: 'Looks there was an error - Wait one moment while we fix this! <br/> <ion-spinner align="center"></ion-spinner>',
+       buttons: null
+    });
+  }
+
+  $scope.refillingData = function(){
+    refillPopup = $ionicPopup.alert({
+      title: 'Refreshing',
+      template: 'Please wait one moment, we\'re refreshing some data! <br/> <ion-spinner align="center"></ion-spinner>',
        buttons: null
     });
   }
@@ -1195,7 +1163,7 @@ User.getAllUsers().then(function (users){
 })
 
 // Signup controller
-.controller('signupCtrl', function ($scope, $ionicPopup, $state, drupal) {
+.controller('signupCtrl', function ($scope, $ionicPopup, drupal) {
   $scope.dataSent = false;
 
 $scope.showRegister = function() {

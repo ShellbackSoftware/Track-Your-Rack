@@ -1,8 +1,9 @@
+# Track Your Rack
 Track Your Rack is a web / mobile, cross-platform app that can be used to track your nail polish collection.
-It is tightly connected to my website, [Shellback Software](www.shellbacksoftware.com/tyr). You can create your profile 
+It is tightly connected to my website, [Shellback Software](https://www.shellbacksoftware.com/tyr). You can create your profile 
 on the website, or in the app, and it saves in both places. You can also add polishes from in the app or on the website.
-The app is completely free, as is registration on the site. I just require registration to filter out bots.
----
+The app is completely free, as is registration on the site. I just require registration to filter out bots. 
+
 What can you actually <em>do</em>, you ask? 
 <ul>
 <li>List for owned polishes (My Rack), as well as polishes you want (Wish List)</li>

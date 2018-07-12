@@ -31,7 +31,7 @@
       </tr>
       <tr ng-if="!emptyResults" ng-repeat="polish in cur_db_polishes track by $index" ng-click="goToPolish(polish)">
         <td class="checkCell" ng-if="editMode"><input type="checkbox" ng-model="checks[polish.nid]"/>&nbsp;</td>
-        <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch}}"/></td>
+        <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
         <td>{{polish.title}}</td>
         <td>{{polish.Brand}}</td>
       </tr>

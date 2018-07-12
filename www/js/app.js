@@ -19,7 +19,7 @@ angular
 })
 
 
-.run(function($ionicPlatform, $cordovaSQLite, DataInterceptor) {
+.run(function($ionicPlatform, $cordovaSQLite) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -39,19 +39,9 @@ angular
     $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY,uid INTEGER, username TEXT, avatar TEXT, firstName TEXT, bio TEXT, following INTEGER, token TEXT)');
     $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS Polishes (id INTEGER PRIMARY KEY, nid INTEGER, title TEXT, Brand TEXT, Finish TEXT, Site TEXT, Number TEXT, Year INTEGER,  Swatch TEXT, inRack INTEGER, inWish INTEGER, currentPolish INTEGER)');
   });
-
-  $ionicPlatform.on('pause', function () {
-    console.log("Paused");
-    });
-
-    // Fills in the data when app is reopened
-    $ionicPlatform.on('resume', function () {
-      console.log("Resumed");
-      DataInterceptor.fillData();
-    });
 })
 
-.config(function($stateProvider, $urlRouterProvider, $httpProvider, $ionicConfigProvider) {
+.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
   $httpProvider.interceptors.push('authInterceptor');
 
   $stateProvider

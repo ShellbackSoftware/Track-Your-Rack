@@ -43,7 +43,7 @@
     <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes" ng-click="openPolish(polish)">
         <td class="checkCell" ng-if="editMode">checkbox</td>
         <td class="checkCell" ng-if="editMode">checkbox</td>
-        <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch}}"/></td>
+        <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
         <td>{{polish.title}}</td>
         <td>{{polish.Brand}}</td>
     </tr>

@@ -53,14 +53,30 @@ angular.module('app.factories', [])
         });
     }
 
-     // Rack
-     self.getRack = function() {
-        return DBA.query("SELECT * FROM Polishes WHERE inRack = 'true' ")
-          .then(function(result){
-            return DBA.getAll(result);
-          });
-      }
+    // Rack
+    self.getRack = function() {
+      return DBA.query("SELECT * FROM Polishes WHERE inRack = 'true' ")
+        .then(function(result){
+          return DBA.getAll(result);
+        });
+    }
   
+    // Wish List
+    self.getWishList = function() {
+      return DBA.query("SELECT * FROM Polishes WHERE inWish = 'true' ")
+        .then(function(result){
+          return DBA.getAll(result);
+        });
+    }
+
+    // Retrieve current Polish
+    self.getCurrentPolish = function( ) {
+      return DBA.query("SELECT * FROM Polishes WHERE currentPolish = 'true' ")
+        .then(function(result) {
+          return DBA.getAll(result);
+        });
+    }
+
     // Retrieve polish
     self.get = function(polishId) {
       var parameters = [polishId];
@@ -78,8 +94,7 @@ angular.module('app.factories', [])
   
     // Update polish
     self.update = function(polishId, update_target, update_value) {
-      var parameters = [update_target, update_value, polishId];
-      return DBA.query("UPDATE Polishes SET (?) = (?) WHERE nid = (?)", parameters);
+      return DBA.query("UPDATE Polishes SET '"+ update_target +"' = '"+ update_value +"' WHERE nid = '" + polishId + "' ");
     }
 
     // Clear table
@@ -111,6 +126,22 @@ angular.module('app.factories', [])
           return DBA.getById(result);
         });
     }
+
+    // Retrieve current User
+    self.getCurrentUser = function( ) {
+      return DBA.query("SELECT * FROM Users WHERE token <> ' ' ")
+        .then(function(result) {
+          return DBA.getAll(result);
+        });
+    }
+
+    // Retrieve Following
+    self.getFollowing = function( ) {
+      return DBA.query("SELECT * FROM Users WHERE following = 'true' ")
+        .then(function(result) {
+          return DBA.getAll(result);
+        });
+    }
   
     // Add user
     self.add = function(user, following, token) {
@@ -120,8 +151,7 @@ angular.module('app.factories', [])
   
     // Update user
     self.update = function(uid, update_target, update_value) {
-      var parameters = [update_target, update_value, uid];
-      return DBA.query("UPDATE Users SET (?) = (?) WHERE nid = (?)", parameters);
+      return DBA.query("UPDATE Users SET '"+ update_target +"' = '"+ update_value +"' WHERE uid = '" + uid + "' ");
     }
   
     // Clear table

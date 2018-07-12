@@ -55,53 +55,50 @@ angular
 })
 
 // Fires when app is reloaded, refills all the necessary lists
-.service('DataInterceptor', function($cookies, User, Polish, SessionService) {
+.service('DataService', function(User, Polish, $cookies, $q) {
   return {
     fillData: function () {
-      SessionService.clearCookieData(); // Reset anything that's set
-      $cookies.allPolishes = [];
-      $cookies.following = [];
-      $cookies.myRack = [];
-      $cookies.myWishList = [];
-      Polish.getAllPolishes().then(function (polishes) {
-        console.log(polishes[0]);
-        polishes.forEach(function (p) { 
-          // Refill polish list
-          $cookies.allPolishes.push(p);
-          // Flag rack
-          if(p.inRack === 'true'){
-            $cookies.myRack.push(p);
-          }
-          // Flag wish list
-          if(p.inWish === 'true'){
-            $cookies.myWishList.push(p);
-          }
-          // Flag current polish
-          if(p.isCurrent === 'true'){
-            $cookies.currentPolish = p;
-          }
+      return $q.all([ 
+        // Fill All Users
+        User.getAllUsers().then(function (users) {
+          $cookies.allUsers = users;
+        }),         
+        // Fill Following
+        User.getFollowing().then(function (users) {
+          $cookies.following = users;
+        }),
+        // Set Current User
+        User.getCurrentUser().then(function (user) {
+          $cookies.currentUser = user;
+        }),
+        // Fill All Polishes
+        Polish.getAllPolishes().then(function (polishes) {
+          $cookies.allPolishes = polishes;
+          $cookies.allPolishes.forEach(function (p) {
+            p.Swatch.src = p.Swatch
+          })
+        }),
+        // Fill Rack
+        Polish.getRack().then(function (rack){
+          $cookies.myRack = rack;
+          $cookies.myRack.forEach(function (p) {
+            p.Swatch.src = p.Swatch
+          })
+        }),
+        // Fill Wish List
+        Polish.getWishList().then(function (wish) {
+          $cookies.myWishList = wish;
+          $cookies.myWishList.forEach(function (p) {
+            p.Swatch.src = p.Swatch
+          })
+        }),
+        // Set Current Polish
+        Polish.getCurrentPolish().then(function (pol) {
+          $cookies.currentPolish = pol;
         })
-      }) 
-
-      User.getAllUsers().then(function (users) {
-        // Refill user list
-        $cookies.allUsers = users;
-        users.forEach(function (u) {
-          // Following user
-          if(u.following){
-            $cookies.following.push(u);
-          }
-          // Set current user
-          if(u.token){
-            $cookies.currentUser = u;
-            $cookies.put("username", u.username);
-            $cookies.put("Cookie", u.token);
-            $cookies.put("uid", u.uid);
-          }
-        })
-      })
+      ]).then(function () {  })
     }
-  }
+  }  
 })
 
 // Catches authentication related stuff
@@ -129,7 +126,6 @@ angular
         node.flag_name = "my_rack";
         node.action = "flag";
         // TODO: Update Polishes table
-        //DBService.savePolish(node.nid, 'inRack', 'true');
        return $q.all([
             drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {    }),
             drupal.views_json("polish/" + node.nid).then(function(res) {
@@ -143,7 +139,6 @@ angular
         node.flag_name = "my_rack";
         node.action = "unflag";
         // TODO: Update Polishes table
-       // DBService.savePolish(node.nid, 'inRack', 'false');
         return drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {
           pIndex = $cookies.myRack.findIndex(x=>x.title === node.title);
           $cookies.myRack.splice(pIndex, 1);
@@ -155,7 +150,6 @@ angular
           node.flag_name = "wish_list";
           node.action = "flag";
           // TODO: Update Polishes table
-         // DBService.savePolish(node.nid, 'inWish', 'true');
           return $q.all([
           drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {     }),
           drupal.views_json("polish/" + node.nid).then(function(res) {
@@ -169,7 +163,6 @@ angular
       node.flag_name = "wish_list";
       node.action = "unflag";
       // TODO: Update Polishes table
-     // DBService.savePolish(node.nid, 'inWish', 'false');
       return drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {
         pIndex = $cookies.myWishList.findIndex(x=>x.title === node.title);
         $cookies.myWishList.splice(pIndex, 1);
@@ -186,7 +179,7 @@ angular
 })
 
 // Cookies / session management
-.service('SessionService', function($cookies, drupal){
+.service('SessionService', function($cookies, drupal, Polish){
     return {
       setCookieData: function() {
         $cookies.put("username", drupal.drupalUser.name);
@@ -199,20 +192,24 @@ angular
             $cookies.remove(k);
         });
         $cookies.currentPolish = null;
-        $cookies.myRack = null;       // loadCtrl, polishCtrl, browseCtrl, myRackCtrl, addPolishCtrl
-        $cookies.myWishList = null;   // loadCtrl, polishCtrl, wishListCtrl, addPolishCtrl
-        $cookies.allPolishes = null;  // loadCtrl, BrowseCtrl, addPolishCtrl
-        $cookies.currentUser = null;  // loadCtrl, ProfileCtrl, FriendsCtrl, UsersCtrl, otherRackCtrl, otherWishCtrl
-        $cookies.following = null;    // profileCtrl, FriendsCtrl, UserService
-        $cookies.allUsers = null;     // usersCtrl
+        $cookies.myRack = null;      
+        $cookies.myWishList = null;   
+        $cookies.allPolishes = null;  
+        $cookies.currentUser = null;  
+        $cookies.following = null;    
+        $cookies.allUsers = null;    
       },
       setCurrentPolish: function(polish) {
         if($cookies.currentPolish){
-          Polish.updatePolish($cookies.currentPolish.nid,'currentPolish', 'false');
+          Polish.update($cookies.currentPolish.nid,'currentPolish', 'false');
         }
         $cookies.currentPolish = null;
         $cookies.currentPolish = polish;
-        Polish.updatePolish(polish.nid, 'currentPolish', 'true');
+        Polish.update(polish.nid, 'currentPolish', 'true');
+      },
+      clearCurrentPolish: function ( ){
+        Polish.update($cookies.currentPolish.nid,'currentPolish', 'false');
+        $cookies.currentPolish = null;
       }
     }
 })
