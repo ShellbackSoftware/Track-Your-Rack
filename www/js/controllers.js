@@ -1016,19 +1016,17 @@ $scope.reset_form = function(){
 })
 
 // Login controller
-.controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window, UserService, User, DataService) {
+.controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window, UserService, User, Polish) {
   $scope.data = {};
   $scope.dataSent = false;
   var loginPopup;
 
-  // Check if user is already logged in
-  User.getAllUsers().then(function (users){
+  // Extra cleanup if the tables didn't drop properly
+ User.getAllUsers().then(function (users){
     if(users.length){
-      //$scope.refillingData();
-      DataService.fillData().then(function () {
-        //refillPopup.close();
-        $state.go('tabsController.home', {}, {reload: true});
-      })
+      Polish.drop();
+      User.drop();
+      $state.reload();
     }
   })
 

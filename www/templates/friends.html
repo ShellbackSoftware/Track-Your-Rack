@@ -12,7 +12,7 @@
     <table ng-if="!noFriends">
     <tr ng-repeat="user in following | orderBy:'toString()'" ng-click="goUser(user)">
         <td class="swatchCol"><img class="thumbnail" ng-src="{{user.picture}}"/></td>
-        <td class="friendsList">{{user.name}}</td>
+        <td class="friendsList">{{user.username}}</td>
     </tr>
   </table>
   <button ng-if="!noFriends" class="all_button" ng-click="scrollUp()">Return To Top</button>
