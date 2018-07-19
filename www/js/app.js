@@ -36,9 +36,15 @@ angular
     }else{
       db = window.openDatabase("tyr.db", '1', 'tyr', 1024 * 1024 * 100); // browser
     }
-    $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY,uid INTEGER, username TEXT, avatar TEXT, firstName TEXT, bio TEXT, following INTEGER, token TEXT)');
+    $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY,uid INTEGER, username TEXT, picture TEXT, firstName TEXT, bio TEXT, website TEXT, following INTEGER, token TEXT, currentUser INTEGER)');
     $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS Polishes (id INTEGER PRIMARY KEY, nid INTEGER, title TEXT, Brand TEXT, Finish TEXT, Site TEXT, Number TEXT, Year INTEGER,  Swatch TEXT, inRack INTEGER, inWish INTEGER, currentPolish INTEGER)');
   });
+
+  $ionicPlatform.on("resume", function (event) {
+    DataService.fillData().then(function (f) {
+      $state.reload();
+    })
+});
 })
 
 .config(function($stateProvider, $urlRouterProvider, $httpProvider) {

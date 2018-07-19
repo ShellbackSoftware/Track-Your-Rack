@@ -21,7 +21,7 @@ angular.module('app.factories', [])
         return q.promise;
     }
 
-    // Proces a result set
+    // Process a result set
     self.getAll = function(result) {
         var output = [];
 
@@ -31,7 +31,7 @@ angular.module('app.factories', [])
         return output;
     }
 
-    // Proces a single result
+    // Process a single result
     self.getById = function(result) {
         var output = null;
         output = angular.copy(result.rows.item(0));
@@ -42,7 +42,7 @@ angular.module('app.factories', [])
 })
 
 // Handles Polishes transactions
-.factory('Polish', function($cordovaSQLite, DBA) {
+.factory('Polish', function(DBA) {
     var self = this;
   
     // All polishes
@@ -107,7 +107,7 @@ angular.module('app.factories', [])
   })
 
   // Handles Users transactions
-.factory('User', function($cordovaSQLite, DBA) {
+.factory('User', function( DBA) {
     var self = this;
   
     // All users
@@ -127,9 +127,17 @@ angular.module('app.factories', [])
         });
     }
 
-    // Retrieve current User
-    self.getCurrentUser = function( ) {
+    // Retrieve logged in User
+    self.getLoggedUser = function( ) {
       return DBA.query("SELECT * FROM Users WHERE token <> ' ' ")
+        .then(function(result) {
+          return DBA.getAll(result);
+        });
+    }
+
+    // Retrieve current user
+    self.getCurrentUser = function( ) {
+      return DBA.query("SELECT * FROM Users WHERE currentUser = 'true' ")
         .then(function(result) {
           return DBA.getAll(result);
         });
@@ -146,7 +154,7 @@ angular.module('app.factories', [])
     // Add user
     self.add = function(user, following, token) {
       var parameters = [user.uid, user.username,user.picture, user.firstName, user.bio, following, token ];
-      return DBA.query('INSERT INTO Users (uid, username, avatar, firstName, bio, following, token) VALUES (?,?,?,?,?,?,?)', parameters);
+      return DBA.query('INSERT INTO Users (uid, username, picture, firstName, bio, following, token) VALUES (?,?,?,?,?,?,?)', parameters);
     }
   
     // Update user

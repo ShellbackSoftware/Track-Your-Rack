@@ -30,13 +30,13 @@
     </div>
     <!-- Someone else's profile -->
     <div ng-show="!ownProfile">
-      <button class="left_button" ng-click="goToRack(currentUser.uid)">Check Out {{currentUser.name}}'s Rack</button>
-      <button class="right_button" ng-click="goToWishList(currentUser.uid)">Check Out {{currentUser.name}}'s Wish List</button>
+      <button class="left_button" ng-click="goToRack(currentUser.uid)">Check Out Rack</button>
+      <button class="right_button" ng-click="goToWishList(currentUser.uid)">View Wish List</button>
       <button class="left_button profile_button" ng-click="follow(currentUser.uid)" ng-disabled="dataSent">
         <span ng-show="following">Unfollow</span>
       <span ng-show="!following">Follow</span>
     </button>
-    <button class="right_button profile_button" ng-click="sendMessage(currentUser)">Send {{currentUser.name}} a Message</button>
+    <button class="right_button profile_button" ng-click="sendMessage(currentUser)" disabled="true">Send a Message</button>
     <button class="all_button" ng-click=reset()>Back To My Profile</button>
     </div>
   </div>

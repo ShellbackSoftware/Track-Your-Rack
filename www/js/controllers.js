@@ -1,10 +1,8 @@
 angular.module('app.controllers', [])
 
 // Home controller
-.controller('homeCtrl', function ($scope, $cookies, SessionService, DataService) {
-  DataService.fillData().then(function (f) { 
-   // $scope.username = $cookies.currentUser.username;
-  })
+.controller('homeCtrl', function ($scope, $cookies, SessionService) {
+  $scope.username = $cookies.loggedUser.username;
 
   if($cookies.currentPolish){
     SessionService.clearCurrentPolish();
@@ -12,8 +10,7 @@ angular.module('app.controllers', [])
 })
 
 // Loading screen
-.controller('loadCtrl', function ($scope,$state, $q, drupal, $cookies, CONSTANTS, User, Polish){
-  $scope.status = "Populating the polish lists";
+.controller('loadCtrl', function ($scope,$state, $q, drupal, $cookies, CONSTANTS, User, Polish, DataService){
     $q.all([
       // Get all polishes
       drupal.views_json("tyr/all-polish").then(function(nodes) {
@@ -27,7 +24,6 @@ angular.module('app.controllers', [])
           nodes.forEach(function (p) { 
             Polish.update(p.nid,'inRack', 'true');
           })
-          $scope.status = "Getting your Wish List";
         })
         // Update Wish List in SQL
         drupal.views_json("user/" + $cookies.get("uid") + "/wish-list").then(function(nodes) {
@@ -36,16 +32,18 @@ angular.module('app.controllers', [])
             Polish.update(p.nid,'inWish', 'true');
           })
         })
-        $scope.status = "Populating User lists";
       }),
 
       // Get all users 
       drupal.views_json("user/all-users").then(function(users) {
         $cookies.allUsers = users;
         users.forEach(function (u) {
+          if(u.picture == ""){ 
+            u.picture = CONSTANTS.BASE_URL + "/sites/default/files/avatars/default_user.png";
+          }
           if(u.uid == $cookies.get("uid")){
             User.add(u, false, $cookies.get("Cookie"))
-            $cookies.currentUser = u;
+            $cookies.loggedUser = u;
           }else{
             User.add(u, false,' ');
           }
@@ -53,13 +51,17 @@ angular.module('app.controllers', [])
 
         // Get list of users that the logging in user is following
         drupal.views_json("user/" + $cookies.get("uid") + "/following").then(function(list) { 
-          $cookies.following = list;
-          list.forEach(function (p) { 
-            User.update(p.uid, 'following', true);
+          $cookies.following = list; 
+          list.forEach(function (u) { 
+            // Just for initialization purposes
+            if(u.picture == ""){ 
+              u.picture = CONSTANTS.BASE_URL + "/sites/default/files/avatars/default_user.png";
+            }
+            User.update(u.uid, 'following', 'true');
           })
         })
-      }) 
-      
+      }), 
+      DataService.fillData().then(function (f) {       })
     // Local storage is filled, time to move on
     ]).then(function( ) {
       $state.go('tabsController.home', {}, {reload: true});
@@ -67,13 +69,12 @@ angular.module('app.controllers', [])
 })
 
 // Polish page controller
-.controller('polishCtrl', function ($scope, $state, drupal, $cookies, $q, $ionicPopup, $filter, PolishService) {
+.controller('polishCtrl', function ($scope, $state, $cookies, $ionicPopup, PolishService) {
   $scope.inRack = false;
   $scope.inWishList = false;
   $scope.curPolish = $cookies.currentPolish;
   var loadPopup = null;
 
-  var pIndex = 0;
   var finRack = $cookies.myRack.filter(function(p) {
     return p.title === $scope.curPolish.title;
   });
@@ -100,7 +101,7 @@ angular.module('app.controllers', [])
 
   $scope.addToRack = function (){
     $scope.showAlert();
-    PolishService.addRack($cookies.currentPolish).then( function(result){
+    PolishService.addRack($cookies.currentPolish).then( function( ){
       $scope.inRack = true;
       loadPopup.close();
     })
@@ -108,7 +109,7 @@ angular.module('app.controllers', [])
 
   $scope.addToWishList = function() {
     $scope.showAlert();
-    PolishService.addWishList($cookies.currentPolish).then( function(result){
+    PolishService.addWishList($cookies.currentPolish).then( function( ){
       $scope.inWishList = true;
       loadPopup.close();
     })
@@ -116,7 +117,7 @@ angular.module('app.controllers', [])
 
   $scope.removeFromRack = function() {
     $scope.showAlert();
-    PolishService.removeRack($cookies.currentPolish).then( function(result){
+    PolishService.removeRack($cookies.currentPolish).then( function( ){
       $scope.inRack = false;
       loadPopup.close();
     })
@@ -124,7 +125,7 @@ angular.module('app.controllers', [])
 
   $scope.removeFromWishList = function() {
     $scope.showAlert();
-    PolishService.removeWishList($cookies.currentPolish).then( function(result){
+    PolishService.removeWishList($cookies.currentPolish).then( function( ){
       $scope.inWishList = false;
       loadPopup.close();
     })
@@ -140,7 +141,7 @@ angular.module('app.controllers', [])
 
   $scope.flagDupe = function (){
     $scope.showFlag();
-    PolishService.flagDupe($cookies.currentPolish).then( function(result){
+    PolishService.flagDupe($cookies.currentPolish).then( function( ){
       flagPopup.close();
       flagPopup2 = $ionicPopup.alert({
        title: 'Flagging Complete',
@@ -155,28 +156,37 @@ angular.module('app.controllers', [])
  })
 
 // Profile controller
-.controller('profileCtrl', function ($scope, $cookies, drupal, CONSTANTS, $ionicPopup, $state, UserService) {
+.controller('profileCtrl', function ($scope, $cookies, drupal, CONSTANTS, $ionicPopup, $state, UserService, SessionService) {
   $scope.publicProfile = true;
   $scope.following = false;
   $scope.data = {};
-  var target_uid;
-  if($cookies.get("uid") === $cookies.currentUser.uid){
-    $scope.ownProfile = true;
+  if($cookies.currentUser){
+    if($cookies.currentUser.uid === $cookies.loggedUser.uid){
+      $scope.ownProfile = true;
+    }else{
+      $scope.ownProfile = false;
+    }
   }else{
-    $scope.ownProfile = false;
+    $scope.ownProfile = true;
   }
+  
 
   $scope.reset = function (){
     drupal.user_load($cookies.get("uid")).then(function(account) {
-      $cookies.currentUser = account;
+      SessionService.setCurrentUser(account);
       $scope.loadUser();
       $state.go('tabsController.profile', {}, {reload: true});
     })
   }
 
   $scope.loadUser = function(){
-   drupal.user_load($cookies.currentUser.uid).then(function(account) {
-     $cookies.currentUser = account;
+    if($cookies.currentUser){
+      target = $cookies.currentUser.uid;
+    }else{
+      target = $cookies.loggedUser.uid;
+    }
+   drupal.user_load(target).then(function(account) {
+     SessionService.setCurrentUser(account);
      $scope.currentUser = account;
      var friend = $cookies.following.filter(function(user) {
       return user.uid === $cookies.currentUser.uid;
@@ -305,7 +315,7 @@ angular.module('app.controllers', [])
  })
 
 // Following controller
-.controller('friendsCtrl', function ($cookies, $scope, CONSTANTS, drupal, $state, $ionicScrollDelegate) {
+.controller('friendsCtrl', function ($cookies, $scope, SessionService, $state, $ionicScrollDelegate, User) {
   $scope.noFriends = true;
   $scope.results = true;
   $scope.following = $cookies.following;
@@ -316,7 +326,7 @@ angular.module('app.controllers', [])
     }
     
   $scope.goUser = function (user) {
-    $cookies.currentUser = user;
+    SessionService.setCurrentUser(user);
     $state.go('tabsController.profile');
   }
 
@@ -355,12 +365,12 @@ angular.module('app.controllers', [])
 })
 
 // All users tab
-.controller('usersCtrl', function ($cookies, $scope, CONSTANTS, drupal, $state, $ionicScrollDelegate) {
+.controller('usersCtrl', function ($cookies, $scope, SessionService, drupal, $state, $ionicScrollDelegate) {
   $scope.allUsers = $cookies.allUsers;
 
   $scope.goUser = function (user) {
     drupal.user_load(user.uid).then(function (u){
-      $cookies.currentUser = u;
+      SessionService.setCurrentUser(u);
      $state.go('tabsController.profile');
     })
   }
@@ -698,7 +708,7 @@ $scope.reset_form = function(){
   $scope.rackPolishes = $cookies.myRack.length;
 
   // Fill in the filters
-  $scope.fillRack = function (){
+  $scope.fillRack = function (){ 
     $scope.emptyResults = true;
     $scope.mpolishes = $cookies.myRack;
     $scope.mbrands = [];
@@ -808,20 +818,19 @@ $scope.reset_form = function(){
 })
 
 // Scanner controller
-.controller('scannerPopupCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
+.controller('scannerPopupCtrl',  function ($scope, $stateParams) {
 
-
-}])
+})
 
 // Add polish to database controller
-.controller('addPolishCtrl', function ($scope, $stateParams, CONSTANTS, $state, drupal, $cookies, $ionicPopup, $q, PolishService) {
+.controller('addPolishCtrl', function ($scope, $state, drupal, $cookies, $ionicPopup, $q, SessionService, PolishService) {
   $scope.data = { };
   $scope.form = { };
-  $scope.aBrands = $cookies.allPolishes;
+ //Delete this $scope.aBrands = $cookies.allPolishes;
   $scope.brandNames = [ ];
   loadPopup = null;
 
-  $scope.aBrands.forEach(function (polish) {
+  /*$scope.aBrands*/$cookies.allPolishes.forEach(function (polish) {
     if($scope.brandNames.indexOf(polish.Brand) === -1 ) {
       $scope.brandNames.push(polish.Brand);
     }
@@ -984,7 +993,7 @@ $scope.reset_form = function(){
         ]).then(function(results) {
           drupal.views_json("polish/" + data.nid).then( function (rnode) {
               var newNode = angular.copy(rnode[0]);
-              $cookies.currentPolish = null;
+              SessionService.clearCurrentPolish();
             if(polish.addToRack && !$scope.inMyRack){
                 PolishService.addRack(newNode).then( function(result){ })
               }
@@ -1015,8 +1024,9 @@ $scope.reset_form = function(){
   // Check if user is already logged in
   User.getAllUsers().then(function (users){
     if(users.length){
-      $scope.refillingData();
+      //$scope.refillingData();
       DataService.fillData().then(function () {
+        //refillPopup.close();
         $state.go('tabsController.home', {}, {reload: true});
       })
     }

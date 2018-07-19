@@ -2,7 +2,7 @@ angular
 
 .module('app.services', [])
 
-.service('UserService', function(CONSTANTS, $http, $q, $cookies, drupal ) {
+.service('UserService', function(CONSTANTS, $http, $q, $cookies, drupal, User, Polish ) {
   return {
     resetPassword: function (email) {
       return $http({
@@ -33,7 +33,7 @@ angular
               res.picture = res.picture.url;
             }
               $cookies.following.push(angular.copy(res));
-              //TODO: Update Users table
+              User.update(targetID, 'following', true);
             })
           ]).then(function(results) {  })
     },
@@ -48,7 +48,7 @@ angular
       return drupal.flag_user(user, targetID, $cookies.get("Cookie")).then(function(result) {
         pIndex = $cookies.following.findIndex(x=>x.uid === targetID);
         $cookies.following.splice(pIndex, 1);
-        //TODO: Update Users table
+        User.update(targetID, 'following', false);
       })
     }
   }
@@ -69,32 +69,36 @@ angular
         }),
         // Set Current User
         User.getCurrentUser().then(function (user) {
-          $cookies.currentUser = user;
+          $cookies.currentUser = user[0];
+        }),
+        // Set Logged In User
+        User.getLoggedUser().then(function (user) {
+          $cookies.loggedUser = user[0];
         }),
         // Fill All Polishes
         Polish.getAllPolishes().then(function (polishes) {
           $cookies.allPolishes = polishes;
           $cookies.allPolishes.forEach(function (p) {
-            p.Swatch.src = p.Swatch
+            p.Swatch.src = p.Swatch;
           })
         }),
         // Fill Rack
         Polish.getRack().then(function (rack){
           $cookies.myRack = rack;
           $cookies.myRack.forEach(function (p) {
-            p.Swatch.src = p.Swatch
+            p.Swatch.src = p.Swatch;
           })
         }),
         // Fill Wish List
         Polish.getWishList().then(function (wish) {
           $cookies.myWishList = wish;
           $cookies.myWishList.forEach(function (p) {
-            p.Swatch.src = p.Swatch
+            p.Swatch.src = p.Swatch;
           })
         }),
         // Set Current Polish
         Polish.getCurrentPolish().then(function (pol) {
-          $cookies.currentPolish = pol;
+          $cookies.currentPolish = pol[0];
         })
       ]).then(function () {  })
     }
@@ -125,11 +129,11 @@ angular
      addRack: function(node) {
         node.flag_name = "my_rack";
         node.action = "flag";
-        // TODO: Update Polishes table
        return $q.all([
             drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {    }),
             drupal.views_json("polish/" + node.nid).then(function(res) {
                 $cookies.myRack.push(angular.copy(res[0]));
+                Polish.update(node.nid,'inRack', 'true');
               })
             ]).then(function(results) {  })
       },
@@ -138,10 +142,10 @@ angular
     removeRack: function (node){
         node.flag_name = "my_rack";
         node.action = "unflag";
-        // TODO: Update Polishes table
         return drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {
           pIndex = $cookies.myRack.findIndex(x=>x.title === node.title);
           $cookies.myRack.splice(pIndex, 1);
+          Polish.update(node.nid,'inRack', 'false');
         })
       },
 
@@ -149,11 +153,11 @@ angular
     addWishList: function(node) {
           node.flag_name = "wish_list";
           node.action = "flag";
-          // TODO: Update Polishes table
           return $q.all([
           drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {     }),
           drupal.views_json("polish/" + node.nid).then(function(res) {
             $cookies.myWishList.push(angular.copy(res[0]));
+            Polish.update(node.nid,'inWish', 'true');
           })
           ]).then(function(results){     })
         },
@@ -162,10 +166,10 @@ angular
     removeWishList: function (node){
       node.flag_name = "wish_list";
       node.action = "unflag";
-      // TODO: Update Polishes table
       return drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {
         pIndex = $cookies.myWishList.findIndex(x=>x.title === node.title);
         $cookies.myWishList.splice(pIndex, 1);
+        Polish.update(node.nid,'inWish', 'false');
       })
     },
 
@@ -179,7 +183,7 @@ angular
 })
 
 // Cookies / session management
-.service('SessionService', function($cookies, drupal, Polish){
+.service('SessionService', function($cookies, drupal, Polish, User){
     return {
       setCookieData: function() {
         $cookies.put("username", drupal.drupalUser.name);
@@ -198,6 +202,7 @@ angular
         $cookies.currentUser = null;  
         $cookies.following = null;    
         $cookies.allUsers = null;    
+        $cookies.loggedUser = null;
       },
       setCurrentPolish: function(polish) {
         if($cookies.currentPolish){
@@ -210,6 +215,18 @@ angular
       clearCurrentPolish: function ( ){
         Polish.update($cookies.currentPolish.nid,'currentPolish', 'false');
         $cookies.currentPolish = null;
+      },
+      setCurrentUser: function(user) {
+        if($cookies.currentUser){
+          User.update($cookies.currentUser.uid,'currentUser', 'false');
+        }
+        $cookies.currentUser = null;
+        $cookies.currentUser = user;
+        User.update(user.uid, 'currentUser', 'true');
+      },
+      clearCurrentUser: function ( ){
+        User.update($cookies.currentUser.uid,'currentUser', 'false');
+        $cookies.currentUser = null;
       }
     }
 })

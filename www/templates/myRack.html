@@ -40,7 +40,7 @@
         <th>Name</th>
         <th>Brand</th>
     </tr>
-    <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes" ng-click="openPolish(polish)">
+    <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes track by $index" ng-click="openPolish(polish)">
         <td class="checkCell" ng-if="editMode">checkbox</td>
         <td class="checkCell" ng-if="editMode">checkbox</td>
         <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
