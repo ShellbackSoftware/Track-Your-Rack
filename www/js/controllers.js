@@ -590,44 +590,45 @@ angular.module('app.controllers', [])
 
 // Return entire wish list
 $scope.fullWish = function(){
-  $scope.fil_polishes = $cookies.myWishList;
+  $scope.fil_wish_polishes = $cookies.myWishList;
   $scope.emptyResults = false;
 }
 
 // Filter wish list for output
 $scope.filterWish = function(data){
+  $scope.wpolishes = $cookies.myWishList;
   $scope.emptyResults = false;
   var selbrand = false;
   var selcollection = false;
-  $scope.fil_polishes = [];
+  $scope.fil_wish_polishes = [];
   $scope.wpolishes.forEach(function (cur_polish){
     if(cur_polish.Brand === data.selectedBrand){
-      $scope.fil_polishes.push(cur_polish);
+      $scope.fil_wish_polishes.push(cur_polish);
       selbrand = true;
     }
     if(cur_polish.Collection === data.selectedCollection){
-      $scope.fil_polishes.push(cur_polish);
+      $scope.fil_wish_polishes.push(cur_polish);
       selcollection = true;
     }
   })
-  $scope.fil_polishes.forEach(function (c_polish){
+  /*$scope.fil_polishes.forEach(function (c_polish){
     if(selbrand && selcollection){
 
     }
-  })
-  if($scope.fil_polishes.length == 0){
+  })*/
+  if($scope.fil_wish_polishes.length == 0){
     $scope.emptyResults = true;
   }
 }
 
 $scope.searchWish = function(query){
-  $scope.fil_polishes = [];
+  $scope.fil_wish_polishes = [];
   $cookies.myWishList.forEach( function(p){
     if(p.title.indexOf(query)!== -1){ 
-      $scope.fil_polishes.push(p);
+      $scope.fil_wish_polishes.push(p);
     }
   })
-  if($scope.fil_polishes.length){
+  if($scope.fil_wish_polishes.length){
     $scope.emptyResults = false;
   }
 }
@@ -636,7 +637,7 @@ $scope.reset_form = function(){
     $scope.original = {};
     $scope.data = angular.copy($scope.original);
     $scope.form.wishList.$setPristine();
-    $scope.fil_polishes = {};
+    $scope.fil_wish_polishes = [];
     $scope.wpolishes = angular.copy($scope.original);
     $scope.emptyResults = true;
     $scope.wquery = "";

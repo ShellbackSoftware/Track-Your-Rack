@@ -3,7 +3,7 @@
     <name>Track Your Rack</name>
     <description>Easily keep track of your nail polish collection.</description>
     <author email="admin@shellbacksoftware.com" href="https://www.shellbacksoftware.com/">Shellback Software</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://192.168.0.12:8100" />
     <access origin="*" />
     <allow-navigation href="http://ionic.local/*" />
     <allow-intent href="http://*/*" />
