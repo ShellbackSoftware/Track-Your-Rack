@@ -123,7 +123,7 @@ angular
     };
 })
 
-.service('PolishService', function($cookies, drupal, $filter, $q) {
+.service('PolishService', function($cookies, drupal, $q, Polish) {
   return {
     // Add polish to My Rack
      addRack: function(node) {

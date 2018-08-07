@@ -9,7 +9,7 @@
 
     <div ng-if="editMode" id="fileUpload">
       <label><input type="file" ng-model="currentUser.newPic" name="picbox" base-sixty-four-input accept="image/*">
-      <span style="width: 50%;">Change Profile Picture</span></label>
+      <span>Change Profile Picture</span></label>
       File Name (You can change it if you like!)<input type="textarea" ng-model="currentUser.newPic.filename" class="inputBox">
     </div>
 
@@ -20,24 +20,24 @@
     <div class="clearfix"></div>
     <!-- Own profile -->
     <div ng-show="ownProfile">
-      <button class="left_button" ng-click="editProfile(currentUser)">
+      <button class="button left_button" ng-click="editProfile(currentUser)">
        <span ng-show="!editMode">Edit Profile</span>
        <span ng-show="editMode">Submit</span>
        </button>
-       <button class="right_button" ng-show="editMode" ng-click="cancel()">
+       <button class="button right_button" ng-show="editMode" ng-click="cancel()">
        <span >Cancel</span>
        </button>
     </div>
     <!-- Someone else's profile -->
     <div ng-show="!ownProfile">
-      <button class="left_button" ng-click="goToRack(currentUser.uid)">Check Out Rack</button>
-      <button class="right_button" ng-click="goToWishList(currentUser.uid)">View Wish List</button>
-      <button class="left_button profile_button" ng-click="follow(currentUser.uid)" ng-disabled="dataSent">
+      <button class="button left_button" ng-click="goToRack(currentUser.uid)">Check Out Rack</button>
+      <button class="button right_button" ng-click="goToWishList(currentUser.uid)">View Wish List</button>
+      <button class="button left_button profile_button" ng-click="follow(currentUser.uid)" ng-disabled="dataSent">
         <span ng-show="following">Unfollow</span>
       <span ng-show="!following">Follow</span>
     </button>
-    <button class="right_button profile_button" ng-click="sendMessage(currentUser)" disabled="true">Send a Message</button>
-    <button class="all_button" ng-click=reset()>Back To My Profile</button>
+    <button class="button right_button profile_button" ng-click="sendMessage(currentUser)" disabled="true">Send a Message</button>
+    <button class="button all_button" ng-click=reset()>Back To My Profile</button>
     </div>
   </div>
   </ion-content>

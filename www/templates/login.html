@@ -7,14 +7,14 @@
             </div>
         <div class="list list-inset">
           <label class="item item-input">
-              <input type="text" placeholder="Username" ng-model="data.username" id="username">
+              <input type="text" class="inputBox" placeholder="Username" ng-model="data.username" id="username">
           </label>
           <label class="item item-input">
-              <input type="password" placeholder="Password" ng-model="data.password">
+              <input type="password" class="inputBox" placeholder="Password" ng-model="data.password">
           </label>
       </div>
       <p class="forgot_password" ng-click="resetPassword()">Forgot your password?</p>
-      <button class="button button-block button-dark" ng-click="login(data)" ng-disabled="dataSent">
+      <button class="button button-block" ng-click="login(data)" ng-disabled="dataSent">
         <span ng-show="!dataSent">Submit</span>
         <span ng-show="dataSent">Checking Your Credentials...</span>
       </button>
@@ -23,5 +23,5 @@
         </div>
       </form>
     </ion-content>
-    <p class="version-number">Version 0.2.0</p>
+    <p class="version-number">Version 0.3.0</p>
 </ion-view>

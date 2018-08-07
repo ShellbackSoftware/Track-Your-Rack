@@ -2,9 +2,9 @@
   <ion-content padding="true" class="has-header">
     <div>
     <input type="textarea" class="searchBox" ng-model="fquery" placeholder="Username">
-    <button class="custom_button" ng-click="searchFriends(fquery)">Search Friends</button> <p style="float:left; margin-right:10px;">or</p> 
-    <button class="custom_button" ng-click="viewUsers()">Browse All Users</button>
-    <button class="all_button" style="margin-top:10px;" ng-click="resetFriends()" ng-if="search">Reset List</button>
+    <button class="button custom_button" ng-click="searchFriends(fquery)">Search Friends</button> <p style="float:left; margin-right:10px;">or</p> 
+    <button class="button custom_button" ng-click="viewUsers()">Browse All Users</button>
+    <button class="button all_button" style="margin-top:10px;" ng-click="resetFriends()" ng-if="search">Reset List</button>
     </div>
     <div class="clearfix"></div>
     <p ng-if="!results"> No results from your search! </p>
@@ -15,6 +15,6 @@
         <td class="friendsList">{{user.username}}</td>
     </tr>
   </table>
-  <button ng-if="!noFriends" class="all_button" ng-click="scrollUp()">Return To Top</button>
+  <button ng-if="!noFriends" class="button all_button" ng-click="scrollUp()">Return To Top</button>
   </ion-content>
 </ion-view>

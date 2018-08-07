@@ -1,3 +1,17 @@
+@font-face {
+	font-family: 'Indie Flower';
+	src: url('fonts/IndieFlower.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* Set default fonts */
+body, h1, h2, h3, 
+button, input, textarea, table, select,
+.popup-sub-title  {
+	font-family: 'Indie Flower';
+}
+
 ion-spinner {
 	position: relative;
   width: 50%;
@@ -6,7 +20,7 @@ ion-spinner {
 }
 
 .page {
-	background-color: #00cccc;
+	background-color: #00bfff;
 }
 
 .addPolishContainer div {
@@ -58,28 +72,28 @@ ion-spinner {
 	display: block;
 	cursor: pointer;
 	position: relative;
-	width: 130px;
-  background-color: #444;
-  margin: 0;
-  margin-bottom: 5px;
-  padding: 0 12px;
-  min-width: 52px;
-  min-height: 24px;
-  border-width: 1px;
-  border-style: transparent;
-  border-radius: 4px;
-  vertical-align: top;
-  text-align: center;
-  text-overflow: ellipsis;
-  color: #fff;
-  font-size: 16px;
-  line-height: 34px;
+	width: 160px;
+	background-color: #FFFFD7;
+	border-color: #63768D;
+	margin: 0;
+	margin-bottom: 5px;
+	padding: 0 12px;
+	min-width: 52px;
+	min-height: 24px;
+	border-width: 1px;
+	border-style: transparent;
+	border-radius: 4px;
+	vertical-align: top;
+	text-align: center;
+	text-overflow: ellipsis;
+	font-size: 16px;
+	line-height: 34px;
 }
 
 #fileUpload span .active,
 #fileUpload span .activated {
-  border-color: #a2a2a2;
-  background-color: #262626;
+	border-color: #63768D;
+  	background-color: #FFFFD7;
 }
 
 #fileUpload input[type=file] {
@@ -91,16 +105,22 @@ ion-spinner {
 .addPolishContainer .inputBox {
 	width: 100%;
 	clear: both;
+	height:1.9em;
 }
 
 .dropdown {
 	width: 100%;
 	margin-top: 5px;
 	height: 30px;
+	background-color: #FFFFD7;
+	border-color: #63768D;
 }
 
-.randomBox {
-	width:40%;
+.randomBox:disabled {
+	width:55%;
+	height:1.9em;
+	background-color: #FFFFD7;
+	border-color: #63768D;
 }
 
 .numberBox {
@@ -110,14 +130,16 @@ ion-spinner {
 }
 
 .searchBox {
-	width: 40%;
+	width: 48%;
 	margin-right: 10px;
-	height: 30px;
+	height: 1.9em;
 	float: left;
+	background-color: #FFFFD7;
+	border-color: #63768D;
 }
 
 .userBox:disabled {
-	background-color:#00cccc;
+	background-color:#00bfff;
 }
 
 .user_bio {
@@ -131,7 +153,7 @@ ion-spinner {
 
 .user_bio:disabled{
 	width: 100%;
-	background-color:#00cccc;
+	background-color:#00bfff;
 	border-style: ridge;
 	border-width: 2px;
 	border-radius: 5px;
@@ -144,30 +166,25 @@ ion-spinner {
 .all_button {
 	width:100%;
 	height: 30px;
-	border-color: transparent;
-	background-color: #444;
-	color: #fff;
 	border-radius: 10px;
 }
 
-.button {
-	border-radius: 10px
+.button, .popup-buttons .button, .popup-buttons .row{
+	font-weight: bold;
+	border-radius: 10px;
+	color: black;
+	background-color: #FFFFD7;
+	border-color: #63768D;
 }
 
 .search_button {
 	float:left;
 	margin-bottom:10px;
 	height: 30px;
-	border-color: transparent;
-  background-color: #444;
-  color: #fff;
-  border-radius: 10px;
+	border-radius: 10px;
 }
 
 .bulk_button {
-	border-color: transparent;
-	background-color: #444	;
-	color: #fff;
 	float: left;
 	height: 30px;
 	margin-right: 10px;
@@ -176,9 +193,6 @@ ion-spinner {
 }
 
 .custom_button {
-	border-color: transparent;
-  background-color: #444	;
-  color: #fff;
   float: left;
   height: 30px;
   margin-right: 10px;
@@ -191,10 +205,7 @@ ion-spinner {
 	margin-bottom:10px;
 	margin-top: 10px;
 	height: 30px;
-	border-color: transparent;
-  background-color: #444;
-  color: #fff;
-  border-radius: 10px;
+  	border-radius: 10px;
 }
 
 .profile_button{
@@ -208,10 +219,7 @@ ion-spinner {
 	margin-bottom:10px;
 	height: 30px;
 	margin-top: 10px;
-	border-color: transparent;
-  background-color: #444;
-  color: #fff;
-  border-radius: 10px;
+	border-radius: 10px;
 }
 
 /* ================= Text ================= */
@@ -248,6 +256,7 @@ table {
 	overflow: hidden;
 	width: 100%;
 	border-radius: 15px;
+	border: 1px solid black;
 	background-color: #E3E5E8;
 	margin-bottom: 10px;
 }
@@ -256,15 +265,25 @@ th {
 	border-bottom: 1px solid black;
 	height: 40px;
 	vertical-align: middle;
+	font-weight: bold;
+	font-size: 1.2em;
 }
 
 td {
 	word-break:break-word;
 	text-align: center;
 	vertical-align: middle;
-	border-bottom: 1px dotted black;
+	border-bottom: 1px solid black;
 	width: 40%;
 }
+
+tbody tr:nth-child(odd) {
+	background-color: #1BABC4;
+ }
+
+ tbody tr:nth-child(even) {
+	background-color: #7AEBFF;
+ }
 
 tr {
 	height: 100px;

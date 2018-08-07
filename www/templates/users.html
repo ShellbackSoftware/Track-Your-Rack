@@ -2,8 +2,8 @@
     <ion-content padding="true" class="has-header">
         <div>
             <input type="textarea" class="searchBox" ng-model="uquery" placeholder="Username"/>
-      <button class="search_button" ng-click="searchUsers(uquery)">Search Users</button>
-      <button class="all_button" ng-click="resetUsers()" style="margin-top:10px;" ng-if="search">Reset List</button>
+      <button class="button search_button" ng-click="searchUsers(uquery)">Search Users</button>
+      <button class="button all_button" ng-click="resetUsers()" style="margin-top:10px;" ng-if="search">Reset List</button>
       </div>
       <table style="margin-top:10px;">
       <tr ng-repeat="u in allUsers | orderBy:'toString()'" ng-click="goUser(u)">
@@ -11,6 +11,6 @@
           <td class="friendsList">{{u.username}}</td>
       </tr>
     </table>
-    <button class="all_button" ng-click="scrollUp()">Return To Top</button>
+    <button class="button all_button" ng-click="scrollUp()">Return To Top</button>
     </ion-content>
   </ion-view>

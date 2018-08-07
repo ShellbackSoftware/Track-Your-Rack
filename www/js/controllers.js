@@ -10,7 +10,7 @@ angular.module('app.controllers', [])
 })
 
 // Loading screen
-.controller('loadCtrl', function ($scope,$state, $q, drupal, $cookies, CONSTANTS, User, Polish, DataService){
+.controller('loadCtrl', function ($state, $q, drupal, $cookies, CONSTANTS, User, Polish, DataService){
     $q.all([
       // Get all polishes
       drupal.views_json("tyr/all-polish").then(function(nodes) {
@@ -411,24 +411,28 @@ angular.module('app.controllers', [])
 .controller('aboutCtrl', function () { })
 
 // Database controller
-.controller('browseCtrl', function ($scope, $state, $cookies, SessionService, $ionicScrollDelegate, $ionicPopup, PolishService) {
+.controller('browseCtrl', function ($scope, $state, $cookies, SessionService, $ionicScrollDelegate, $ionicPopup, PolishService, $q, $filter) {
   $scope.editMode = false;
   $scope.form = {};
   $scope.data = {};
   $scope.checks = [];
-  $scope.emptyResults = true;
+  if($scope.cur_db_polishes){
+    $scope.emptyResults = false;
+  }else{
+    $scope.cur_db_polishes = [];
+    $scope.emptyResults = true;
+  }
   $scope.bpolishes = [];
-  $scope.cur_db_polishes = [];
   $scope.tempPolishes = $cookies.myRack;
 
-  $scope.bpolishes = $cookies.allPolishes;
   $scope.bbrands = [];
   $scope.bcollections = [];
-  $scope.bpolishes.forEach(function (polish) {
+  // Fill in Brand and Collection drop downs
+  $cookies.allPolishes.forEach(function (polish) {
     if($scope.bbrands.indexOf(polish.Brand) === -1 ) {
       $scope.bbrands.push(polish.Brand);
     }
-    if(($scope.bcollections.indexOf(polish.Collection) === -1) && polish.Collection !== "" ) {
+    if(($scope.bcollections.indexOf(polish.Collection) === -1) && polish.Collection != "" ) {
       $scope.bcollections.push(polish.Collection);
     }
   })
@@ -460,6 +464,7 @@ angular.module('app.controllers', [])
 
   $scope.bulkFlag = function () {
     $scope.showAlert();
+    $q.all([
     // Checks through all polishes to see if it's flagged or not; Must be a better way to do this
     $cookies.allPolishes.forEach(function (p){
       var finRack = $cookies.myRack.filter(function(pol) {
@@ -474,24 +479,27 @@ angular.module('app.controllers', [])
         }
       // Else ignore and do nothing
     })
-    loadPopup.close();
+    ]).then(function( ) {
+      loadPopup.close();
+      $scope.editMode = false;
+    })
   }
 
   $scope.searchDB = function(query){
-    $scope.fil_polishes = [];
+    $scope.cur_db_polishes = [];
     $cookies.allPolishes.forEach( function(p){
       if(p.title.indexOf(query)!== -1){ 
-        $scope.fil_polishes.push(p);
+        $scope.cur_db_polishes.push(p);
       }
     })
-    if($scope.fil_polishes.length){
+    if($scope.cur_db_polishes.length){
       $scope.emptyResults = false;
     }
   }
 
   $scope.filter_db = function(data){
     $scope.emptyResults = false;
-    $scope.cur_db_polishes = {};
+    //$scope.cur_db_polishes = [];
     var selbrand = false;
     var selcollection = false;
     var filtered_db = [];
@@ -523,9 +531,9 @@ angular.module('app.controllers', [])
           if(pol.Brand === data.selectedBrand && pol.Collection === data.selectedCollection)
             ex_filtered_db.push(pol);
         })
-        $scope.cur_db_polishes = ex_filtered_db;
+        $scope.cur_db_polishes = $filter('unique')(ex_filtered_db, 'title');
       }else{
-        $scope.cur_db_polishes = filtered_db;
+        $scope.cur_db_polishes = $filter('unique')(filtered_db, 'title');
       }
     }
   }
@@ -540,7 +548,6 @@ angular.module('app.controllers', [])
       $scope.setFlag(data);
     }else{
       SessionService.setCurrentPolish(angular.copy(data));
-      $scope.clear_filter();
       $state.go('tabsController.polish');
     }
   }
@@ -550,7 +557,7 @@ angular.module('app.controllers', [])
     $scope.data = angular.copy($scope.original);
     $scope.form.database.$setPristine();
     $scope.bpolishes = angular.copy($scope.original);
-    $scope.cur_db_polishes = {};
+    $scope.cur_db_polishes = [];
     $scope.emptyResults = true;
     $scope.editMode = false;
     $scope.dbquery = "";
@@ -563,7 +570,7 @@ angular.module('app.controllers', [])
 
 
 // Wish List controller
-.controller('wishListCtrl', function ($state, $scope, drupal, $cookies, SessionService, $ionicScrollDelegate, CONSTANTS, $ionicPopup) {
+.controller('wishListCtrl', function ($state, $scope, $cookies, SessionService, $ionicScrollDelegate, CONSTANTS, $ionicPopup) {
   $scope.form = {};
   $scope.data = {};
 
@@ -576,7 +583,7 @@ angular.module('app.controllers', [])
     if($scope.wbrands.indexOf(polish.Brand) === -1 ) {
       $scope.wbrands.push(polish.Brand);
     }
-    if(($scope.wcollections.indexOf(polish.Collection) === -1) && polish.Collection !== "" ) {
+    if(($scope.wcollections.indexOf(polish.Collection) === -1) && polish.Collection != "" ) {
       $scope.wcollections.push(polish.Collection);
     }
   })
@@ -637,7 +644,6 @@ $scope.reset_form = function(){
 
   $scope.openPolish = function(data){
     SessionService.setCurrentPolish(angular.copy(data));
-    $scope.reset_form();
     $state.go('tabsController.polish');
   }
 
@@ -717,7 +723,7 @@ $scope.reset_form = function(){
       if($scope.mbrands.indexOf(polish.Brand) === -1 ) {
         $scope.mbrands.push(polish.Brand);
       }
-      if(($scope.mcollections.indexOf(polish.Collection) === -1) && polish.Collection !== "" ) {
+      if(($scope.mcollections.indexOf(polish.Collection) === -1) && polish.Collection != "" ) {
         $scope.mcollections.push(polish.Collection);
       }
     })
@@ -795,7 +801,6 @@ $scope.reset_form = function(){
 
   $scope.openPolish = function(polish){
     SessionService.setCurrentPolish(angular.copy(polish));
-    $scope.reset_form();
     $state.go('tabsController.polish');
   }
 
@@ -823,14 +828,13 @@ $scope.reset_form = function(){
 })
 
 // Add polish to database controller
-.controller('addPolishCtrl', function ($scope, $state, drupal, $cookies, $ionicPopup, $q, SessionService, PolishService) {
+.controller('addPolishCtrl', function ($scope, $state, drupal, $cookies, $ionicPopup, $q, SessionService, PolishService, DataService, Polish) {
   $scope.data = { };
   $scope.form = { };
- //Delete this $scope.aBrands = $cookies.allPolishes;
   $scope.brandNames = [ ];
   loadPopup = null;
 
-  /*$scope.aBrands*/$cookies.allPolishes.forEach(function (polish) {
+  $cookies.allPolishes.forEach(function (polish) {
     if($scope.brandNames.indexOf(polish.Brand) === -1 ) {
       $scope.brandNames.push(polish.Brand);
     }
@@ -849,7 +853,7 @@ $scope.reset_form = function(){
   $scope.showLoading = function() {
     loadPopup = $ionicPopup.alert({
        title: 'Updating',
-       template: 'Please wait one moment, we\'re updating our server! <br/> <ion-spinner></ion-spinner>',
+       template: 'Please wait one moment, we\'re updating our server! (This may take a little bit!)<br/> <ion-spinner></ion-spinner>',
        buttons: null
     });
   }
@@ -915,7 +919,7 @@ $scope.reset_form = function(){
       });
       return;
     }
-
+    // This next part (until popup.close()) takes FOREVER. Need to figure out a way to speed it up.
   $scope.showLoading();
     var saveImage;
     if(polish.selBrand){
@@ -970,46 +974,45 @@ $scope.reset_form = function(){
     }
   }
 
-    $scope.saveNode = function(node, polish){
+    $scope.saveNode = function(node, polish){ 
       drupal.node_save(node, $cookies.get("Cookie")).then(function(data) {
         if(data.status == 403){
 
         }
       // Update all the lists to reflect the new polish
-      $cookies.myRack = null;
-      $cookies.myWishList = null;
-      $cookies.allPolishes = null;
+      $cookies.myRack = [];
+      $cookies.myWishList = [];
+      $cookies.allPolishes = [];
+      // Polish just created
+      var newNode = {};
 
-      $q.all([
-          drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
-            $cookies.myRack = nodes;
-          }),
-          drupal.views_json("user/" + $cookies.get("uid") + "/wish-list").then(function(nodes) {
-            $cookies.myWishList = nodes;
-          }),
-          drupal.views_json("tyr/all-polish").then(function(nodes) {
-            $cookies.allPolishes = nodes;
+     $q.all([
+          drupal.views_json("polish/" + data.nid).then( function (rnode) {
+            newNode = angular.copy(rnode[0]);
+            // Insert the new node into SQLite
+            Polish.add(newNode,false,false,false);
           })
         ]).then(function(results) {
-          drupal.views_json("polish/" + data.nid).then( function (rnode) {
-              var newNode = angular.copy(rnode[0]);
-              SessionService.clearCurrentPolish();
-            if(polish.addToRack && !$scope.inMyRack){
-                PolishService.addRack(newNode).then( function(result){ })
-              }
-            if(polish.addToWishList && !$scope.inMyWishList){
-              PolishService.addWishList(newNode).then( function(result){ })
-            }
-            if(!polish.addToRack && $scope.inMyRack){
-                PolishService.removeRack(newNode).then( function(result){ })
-              }
-            if(!polish.addToWishList && $scope.inMyWishList){
-              PolishService.removeWishList(newNode).then( function(result){ })
-            }
-          loadPopup.close();
-          $scope.reset_form();
-          $state.go('tabsController.home', {}, {reload: true});
-          });
+            DataService.fillData().then( function () { 
+                if($cookies.currentPolish){
+                    SessionService.clearCurrentPolish();
+                  }
+                if(polish.addToRack && !$scope.inMyRack){
+                    PolishService.addRack(newNode).then( function(result){ })
+                  }
+                if(polish.addToWishList && !$scope.inMyWishList){
+                  PolishService.addWishList(newNode).then( function(result){ })
+                }
+                if(!polish.addToRack && $scope.inMyRack){
+                    PolishService.removeRack(newNode).then( function(result){ })
+                  }
+                if(!polish.addToWishList && $scope.inMyWishList){
+                  PolishService.removeWishList(newNode).then( function(result){ })
+                }
+              loadPopup.close();
+              $scope.reset_form();
+              $state.go('tabsController.home', {}, {reload: true});
+            })
           })
         })
     }

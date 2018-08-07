@@ -9,11 +9,11 @@
         <p ng-if="curPolish.Season">Release Season: {{curPolish.Season}} </p>
         <p ng-if="curPolish.Year">Release Year: {{curPolish.Year}} </p>
         <p ng-if="curPolish.Site">Site: <a href="{{pSite}}">{{curPolish.Site}} </a> </p>
-        <button class="left_button" ng-show="inRack" ng-click="removeFromRack()">Remove From Rack</button>
-        <button class="left_button" ng-show="!inRack" ng-click="addToRack()">Add To Rack</button>
-        <button class="right_button" ng-show="inWishList" ng-click="removeFromWishList()">Remove From Wish List</button>
-        <button class="right_button" ng-show="!inWishList" ng-click="addToWishList()">Add To Wish List</button>
-        <button ng-click="updatePolish()" class="all_button">Edit Polish</button>
-        <button class="all_button" ng-click="flagDupe()" style="margin-top: 10px;">This polish is a duplicate</button>
+        <button class="button left_button" ng-show="inRack" ng-click="removeFromRack()">Remove From Rack</button>
+        <button class="button left_button" ng-show="!inRack" ng-click="addToRack()">Add To Rack</button>
+        <button class="button right_button" ng-show="inWishList" ng-click="removeFromWishList()">Remove From Wish List</button>
+        <button class="button right_button" ng-show="!inWishList" ng-click="addToWishList()">Add To Wish List</button>
+        <button ng-click="updatePolish()" class="button all_button">Edit Polish</button>
+        <button class="button all_button" ng-click="flagDupe()" style="margin-top: 10px;">This polish is a duplicate</button>
     </ion-content>
 </ion-view>

@@ -1,8 +1,8 @@
 <ion-view title="Wish List" id="wishList" class="page">
   <ion-content padding="true" class="has-header">
-    <button class="all_button" style="margin-bottom:10px;" ng-click="shareWish()">Share Your Wish List</button>
+    <button class="button all_button" style="margin-bottom:10px;" ng-click="shareWish()">Share Your Wish List</button>
    <div>
-      <input type="textarea" placeholder="Polish Name" class="searchBox" ng-model="wquery"><button class="search_button" ng-click="searchWish(wquery)">Search Wish List</button>
+      <input type="textarea" placeholder="Polish Name" class="searchBox" ng-model="wquery"><button class="button search_button" ng-click="searchWish(wquery)">Search Wish List</button>
   </div>
 <div class="clearfix"></div>
   <form name="form.wishList">
@@ -15,9 +15,9 @@
       <option value="">Collection</option>
       <option ng-repeat="cln in wcollections | orderBy:'toString()' "  value="{{cln}}">{{cln}}</option>
     </select>
-    <button class="left_button" ng-click="filterWish(data)">Go</button>
-    <button class="right_button" ng-click="reset_form()">Reset Selection</button>
-    <button class="all_button" ng-click="fullWish()">Show All (May be slow)</button>
+    <button class="button left_button" ng-click="filterWish(data)">Go</button>
+    <button class="button right_button" ng-click="reset_form()">Reset Selection</button>
+    <button class="button all_button" ng-click="fullWish()">Show All (May be slow)</button>
   </form>
 
   <!-- Results from filtering -->
@@ -34,6 +34,6 @@
         <td>{{polish.Brand}}</td>
     </tr>
   </table>
-  <button ng-if="!emptyResults" class="all_button" ng-click="scrollUp()">Return To Top</button>
+  <button ng-if="!emptyResults" class="button all_button" ng-click="scrollUp()">Return To Top</button>
   </ion-content>
 </ion-view>

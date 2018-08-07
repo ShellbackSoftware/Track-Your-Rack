@@ -1,16 +1,16 @@
 <ion-view title="My Rack" id="myrack" class="page">
   <ion-content padding="true" class="has-header">
     <div>
-        <button class="all_button" ng-click="shareRack()">Share Your Rack</button>
+        <button class="button all_button" ng-click="shareRack()">Share Your Rack</button>
       <p>Not sure what color to paint your nails? </p>
-      <button ng-click="spinWheel()" class="custom_button">Try Your Luck!</button>
+      <button ng-click="spinWheel()" class="button custom_button">Try Your Luck!</button>
       <input type="textarea" class="randomBox" ng-value="randomPolish" disabled> <div class="clearfix"></div>
-      <p style="margin-top: 8px">Don't want a specific polish name?</p><button class="custom_button" ng-click="randomColor()">Give Me A Color!</button>
+      <p style="margin-top: 8px">Don't want a specific polish name?</p><button class="button custom_button" ng-click="randomColor()">Give Me A Color!</button>
       <div id="random-color" ng-style="{'background-color': bgColor}"></div>
     </div>
     <div class="clearfix"></div> <br/>
     <div>
-      <input type="textarea" placeholder="Polish Name" class="searchBox" ng-model="rquery"><button class="search_button" ng-click="searchRack(rquery)">Search Rack</button>
+      <input type="textarea" placeholder="Polish Name" class="searchBox" ng-model="rquery"><button class="button search_button" ng-click="searchRack(rquery)">Search Rack</button>
   </div>
   <div class="clearfix"></div>
   <p>You have {{numBrands}} different brands, and {{rackPolishes}} total polishes.</p>
@@ -25,9 +25,9 @@
       <option value="">Collection</option>
       <option ng-repeat="cln in mcollections | orderBy:'toString()' "  value="{{cln}}">{{cln}}</option>
     </select>
-    <button class="left_button" ng-click="filterRack(data)">Go</button>
-    <button class="right_button" ng-click="reset_form()">Reset Selection</button>
-    <button class="all_button" ng-click="fullRack()">Show All (May be slow)</button>
+    <button class="button left_button" ng-click="filterRack(data)">Go</button>
+    <button class="button right_button" ng-click="reset_form()">Reset Selection</button>
+    <button class="button all_button" ng-click="fullRack()">Show All (May be slow)</button>
   </form>
 
   <!-- Results from filtering -->
@@ -40,7 +40,7 @@
         <th>Name</th>
         <th>Brand</th>
     </tr>
-    <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes track by $index" ng-click="openPolish(polish)">
+    <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes" ng-click="openPolish(polish)">
         <td class="checkCell" ng-if="editMode">checkbox</td>
         <td class="checkCell" ng-if="editMode">checkbox</td>
         <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
@@ -48,6 +48,6 @@
         <td>{{polish.Brand}}</td>
     </tr>
   </table>
-  <button ng-if="!emptyResults" class="all_button" ng-click="scrollUp()">Return To Top</button>
+  <button ng-if="!emptyResults" class="button all_button" ng-click="scrollUp()">Return To Top</button>
   </ion-content>
 </ion-view>

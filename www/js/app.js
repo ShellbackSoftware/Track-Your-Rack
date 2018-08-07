@@ -18,6 +18,19 @@ angular
   'IMG_SRC': 'https://www.shellbacksoftware.com/sites/default/files'
 })
 
+.filter('unique', function() {
+  return function(collection, keyname) {
+     var output = {};
+     
+     for(var i = 0; i < collection.length; i++){
+         output[collection[i][keyname]] = collection[i];
+     }
+   
+     output = Object.keys(output).map(function (key) {return output[key]});
+
+     return output;
+  };
+})
 
 .run(function($ionicPlatform, $cordovaSQLite) {
   $ionicPlatform.ready(function() {
@@ -145,7 +158,7 @@ angular
   })
 
   .state('tabsController.browseDB', {
-    cache: false,
+    //cache: false,
     url: '/browseDB',
     views: {
       'homeTab': {
