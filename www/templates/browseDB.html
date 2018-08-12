@@ -10,10 +10,10 @@
       <option value="">Brand</option>
       <option ng-repeat="b in bbrands | orderBy:'toString()'" value="{{b}}">{{b}}</option>
     </select>
-    <select class="dropdown" ng-model="data.selectedCollection">
+    <!--<select class="dropdown" ng-model="data.selectedCollection">
       <option value="">Collection</option>
       <option ng-repeat="cln in bcollections | orderBy:'toString()' "  value="{{cln}}">{{cln}}</option>
-    </select>
+    </select>-->
     <button class="button left_button" ng-click="filter_db(data)">Go</button>
     <button class="button right_button" ng-click="clear_filter()">Reset Selection</button>
     <button class="button all_button" ng-click="showAll()">Show All (May be slow)</button>

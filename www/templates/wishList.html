@@ -11,10 +11,10 @@
       <option value="">Brand</option>
       <option ng-repeat="b in wbrands | orderBy:'toString()'" value="{{b}}">{{b}}</option>
     </select>
-    <select class="dropdown" ng-model="data.selectedCollection">
+    <!--<select class="dropdown" ng-model="data.selectedCollection">
       <option value="">Collection</option>
       <option ng-repeat="cln in wcollections | orderBy:'toString()' "  value="{{cln}}">{{cln}}</option>
-    </select>
+    </select>-->
     <button class="button left_button" ng-click="filterWish(data)">Go</button>
     <button class="button right_button" ng-click="reset_form()">Reset Selection</button>
     <button class="button all_button" ng-click="fullWish()">Show All (May be slow)</button>

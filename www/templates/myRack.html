@@ -21,10 +21,10 @@
       <option value="">Brand</option>
       <option ng-repeat="b in mbrands | orderBy:'toString()'" value="{{b}}">{{b}}</option>
     </select>
-    <select class="dropdown" ng-model="data.selectedCollection">
+   <!-- <select class="dropdown" ng-model="data.selectedCollection">
       <option value="">Collection</option>
       <option ng-repeat="cln in mcollections | orderBy:'toString()' "  value="{{cln}}">{{cln}}</option>
-    </select>
+    </select>-->
     <button class="button left_button" ng-click="filterRack(data)">Go</button>
     <button class="button right_button" ng-click="reset_form()">Reset Selection</button>
     <button class="button all_button" ng-click="fullRack()">Show All (May be slow)</button>

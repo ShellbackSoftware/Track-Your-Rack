@@ -20,7 +20,7 @@ ion-spinner {
 }
 
 .page {
-	background-color: #00bfff;
+	background-color: #b5f8e6;
 }
 
 .addPolishContainer div {
@@ -40,7 +40,7 @@ ion-spinner {
 
 /* Random color generator box */
 #random-color {
-	width: 30%;
+	width: 50%;
 	height: 30px;
 	border-style: ridge;
 	border-width: 2px;
@@ -73,7 +73,7 @@ ion-spinner {
 	cursor: pointer;
 	position: relative;
 	width: 160px;
-	background-color: #FFFFD7;
+	background-color: #636363;
 	border-color: #63768D;
 	margin: 0;
 	margin-bottom: 5px;
@@ -93,7 +93,7 @@ ion-spinner {
 #fileUpload span .active,
 #fileUpload span .activated {
 	border-color: #63768D;
-  	background-color: #FFFFD7;
+  	background-color: #636363;
 }
 
 #fileUpload input[type=file] {
@@ -112,15 +112,17 @@ ion-spinner {
 	width: 100%;
 	margin-top: 5px;
 	height: 30px;
-	background-color: #FFFFD7;
+	background-color: #636363;
 	border-color: #63768D;
+	color: white;
 }
 
 .randomBox:disabled {
 	width:55%;
 	height:1.9em;
-	background-color: #FFFFD7;
+	background-color: #636363;
 	border-color: #63768D;
+	color: white;
 }
 
 .numberBox {
@@ -134,12 +136,17 @@ ion-spinner {
 	margin-right: 10px;
 	height: 1.9em;
 	float: left;
-	background-color: #FFFFD7;
+	background-color: #636363;
 	border-color: #63768D;
+	color: white;
+}
+
+::placeholder {
+	color: white;
 }
 
 .userBox:disabled {
-	background-color:#00bfff;
+	background-color:#b5f8e6;
 }
 
 .user_bio {
@@ -153,7 +160,7 @@ ion-spinner {
 
 .user_bio:disabled{
 	width: 100%;
-	background-color:#00bfff;
+	background-color:#b5f8e6;
 	border-style: ridge;
 	border-width: 2px;
 	border-radius: 5px;
@@ -172,8 +179,8 @@ ion-spinner {
 .button, .popup-buttons .button, .popup-buttons .row{
 	font-weight: bold;
 	border-radius: 10px;
-	color: black;
-	background-color: #FFFFD7;
+	color: white;
+	background-color: #636363;
 	border-color: #63768D;
 }
 
@@ -278,11 +285,11 @@ td {
 }
 
 tbody tr:nth-child(odd) {
-	background-color: #1BABC4;
+	background-color: #a2a4a4a4;
  }
 
  tbody tr:nth-child(even) {
-	background-color: #7AEBFF;
+	background-color: #d3d5d4;
  }
 
 tr {
