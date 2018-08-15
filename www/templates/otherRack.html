@@ -9,8 +9,8 @@
         <th>Name</th>
         <th>Brand</th>
     </tr>
-    <tr ng-repeat="polish in other_polishes" ng-click="openPolish(polish)">
-        <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
+    <tr ng-repeat="polish in other_polishes track by $index " ng-click="openPolish(polish)">
+        <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch}}"/></td>
         <td>{{polish.title}}</td>
         <td>{{polish.Brand}}</td>
     </tr>

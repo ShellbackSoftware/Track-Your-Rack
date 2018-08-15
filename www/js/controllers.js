@@ -16,12 +16,14 @@ angular.module('app.controllers', [])
       drupal.views_json("tyr/all-polish").then(function(nodes) {
         $cookies.allPolishes = nodes;
         nodes.forEach(function (p){
+          p.Swatch = p.Swatch.src;
           Polish.add(p,false,false,false);
         })
         // Update Rack in SQL
         drupal.views_json("user/" + $cookies.get("uid") + "/my-rack").then(function(nodes) {
           $cookies.myRack = nodes;
           nodes.forEach(function (p) { 
+            p.Swatch = p.Swatch.src;
             Polish.update(p.nid,'inRack', 'true');
           })
         })
@@ -29,6 +31,7 @@ angular.module('app.controllers', [])
         drupal.views_json("user/" + $cookies.get("uid") + "/wish-list").then(function(nodes) {
           $cookies.myWishList = nodes;
           nodes.forEach(function (p) { 
+            p.Swatch = p.Swatch.src;
             Polish.update(p.nid,'inWish', 'true');
           })
         })
@@ -252,7 +255,6 @@ angular.module('app.controllers', [])
             filepath:"public://avatars/"+name+"."+type
           }
           saveImage = drupal.file_save(pic64, $cookies.get("Cookie")).then(function (f) {
-           // var addFile = { picture: { "und": [{ "fid": f.fid }] } };
            var addFile = { picture_upload: f.fid };
               angular.extend(acct, addFile );
               drupal.user_save(acct, $cookies.get("Cookie")).then(function(result) {
@@ -334,7 +336,7 @@ angular.module('app.controllers', [])
     $scope.search = true;
     $scope.following = [];
     $cookies.following.forEach( function(u){
-      if(u.name.indexOf(query)!== -1){ 
+      if(u.name.toLowerCase().indexOf(query.toLowerCase() !== -1) ) { 
         $scope.following.push(u);
       }
     })
@@ -383,7 +385,7 @@ angular.module('app.controllers', [])
     $scope.search = true;
     $scope.allUsers = [];
     $cookies.allUsers.forEach( function(u){
-      if(u.username.indexOf(query)!== -1){ 
+      if(u.username.toLowerCase().indexOf(query.toLowerCase())!== -1){ 
         $scope.allUsers.push(u);
       }
     })
@@ -463,8 +465,9 @@ angular.module('app.controllers', [])
   }
 
   $scope.bulkFlag = function () {
-    $scope.showAlert();
+    
     $q.all([
+      $scope.showAlert(),
     // Checks through all polishes to see if it's flagged or not; Must be a better way to do this
     $cookies.allPolishes.forEach(function (p){
       var finRack = $cookies.myRack.filter(function(pol) {
@@ -488,7 +491,7 @@ angular.module('app.controllers', [])
   $scope.searchDB = function(query){
     $scope.cur_db_polishes = [];
     $cookies.allPolishes.forEach( function(p){
-      if(p.title.indexOf(query)!== -1){ 
+      if(p.title.toLowerCase().indexOf(query.toLowerCase())!== -1){ 
         $scope.cur_db_polishes.push(p);
       }
     })
@@ -624,7 +627,7 @@ $scope.filterWish = function(data){
 $scope.searchWish = function(query){
   $scope.fil_wish_polishes = [];
   $cookies.myWishList.forEach( function(p){
-    if(p.title.indexOf(query)!== -1){ 
+    if(p.title.toLowerCase().indexOf(query.toLowerCase())!== -1){ 
       $scope.fil_wish_polishes.push(p);
     }
   })
@@ -809,7 +812,7 @@ $scope.reset_form = function(){
     $scope.byBrand = false;
     $scope.fil_polishes = [];
     $cookies.myRack.forEach( function(p){
-      if(p.title.indexOf(query)!== -1){ 
+      if(p.title.toLowerCase().indexOf(query.toLowerCase())!== -1){ 
         $scope.fil_polishes.push(p);
       }
     })
@@ -990,6 +993,7 @@ $scope.reset_form = function(){
      $q.all([
           drupal.views_json("polish/" + data.nid).then( function (rnode) {
             newNode = angular.copy(rnode[0]);
+            newNode.Swatch = newNode.Swatch.src; 
             // Insert the new node into SQLite
             Polish.add(newNode,false,false,false);
           })
@@ -1021,11 +1025,20 @@ $scope.reset_form = function(){
 
 // Login controller
 .controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window, UserService, User, Polish) {
+  
   $scope.data = {};
   $scope.dataSent = false;
   var loginPopup;
 
   // Extra cleanup if the tables didn't drop properly
+  Polish.getAllPolishes().then(function(polishes) {
+    if(polishes.length){
+      Polish.drop();
+      User.drop();
+      $state.reload();
+    }
+  })
+
  User.getAllUsers().then(function (users){
     if(users.length){
       Polish.drop();

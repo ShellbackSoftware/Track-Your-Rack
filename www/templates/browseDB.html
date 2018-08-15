@@ -1,7 +1,7 @@
 <ion-view title="Polish Database" id="browseDB" class="page">
   <ion-content padding="true" class="has-header">
     <div id="top">
-      <input type="textarea" placeholder="Brand, color, or collection" class="searchBox" ng-model="dbquery"><button class="button search_button" ng-click="searchDB(dbquery)">Search All Polishes</button>
+      <input type="textarea" placeholder="Polish Name" class="searchBox" ng-model="dbquery"><button class="button search_button" ng-click="searchDB(dbquery)">Search All Polishes</button>
   </div>
   <div class="clearfix"></div>
 <form name="form.database">
@@ -29,9 +29,9 @@
         <th>Name</th>
         <th>Brand</th>
       </tr>
-      <tr ng-if="!emptyResults" ng-repeat="polish in cur_db_polishes" ng-click="goToPolish(polish)">
+      <tr ng-if="!emptyResults" ng-repeat="polish in cur_db_polishes track by $index " ng-click="goToPolish(polish)">
         <td class="checkCell" ng-if="editMode"><input type="checkbox" ng-model="checks[polish.nid]"/>&nbsp;</td>
-        <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
+        <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch}}"/></td>
         <td>{{polish.title}}</td>
         <td>{{polish.Brand}}</td>
       </tr>

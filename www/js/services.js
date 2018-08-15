@@ -78,23 +78,14 @@ angular
         // Fill All Polishes
         Polish.getAllPolishes().then(function (polishes) {
           $cookies.allPolishes = polishes;
-          $cookies.allPolishes.forEach(function (p) {
-            p.Swatch.src = p.Swatch;
-          })
         }),
         // Fill Rack
         Polish.getRack().then(function (rack){
           $cookies.myRack = rack;
-          $cookies.myRack.forEach(function (p) {
-            p.Swatch.src = p.Swatch;
-          })
         }),
         // Fill Wish List
         Polish.getWishList().then(function (wish) {
           $cookies.myWishList = wish;
-          $cookies.myWishList.forEach(function (p) {
-            p.Swatch.src = p.Swatch;
-          })
         }),
         // Set Current Polish
         Polish.getCurrentPolish().then(function (pol) {
@@ -132,7 +123,9 @@ angular
        return $q.all([
             drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {    }),
             drupal.views_json("polish/" + node.nid).then(function(res) {
-                $cookies.myRack.push(angular.copy(res[0]));
+               var newNode = angular.copy(res[0]);
+               newNode.Swatch = newNode.Swatch.src;
+                $cookies.myRack.push(newNode);
                 Polish.update(node.nid,'inRack', 'true');
               })
             ]).then(function(results) {  })
@@ -156,7 +149,9 @@ angular
           return $q.all([
           drupal.flag_node(node, $cookies.get("Cookie")).then(function(result) {     }),
           drupal.views_json("polish/" + node.nid).then(function(res) {
-            $cookies.myWishList.push(angular.copy(res[0]));
+            var newNode = angular.copy(res[0]);
+            newNode.Swatch = newNode.Swatch.src;
+            $cookies.myWishList.push(newNode);
             Polish.update(node.nid,'inWish', 'true');
           })
           ]).then(function(results){     })

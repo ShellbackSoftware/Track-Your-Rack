@@ -2,6 +2,7 @@
   <ion-content padding="true" class="has-header">
     <div>
         <button class="button all_button" ng-click="shareRack()">Share Your Rack</button>
+        <br/><br/>
       <p>Not sure what color to paint your nails? </p>
       <button ng-click="spinWheel()" class="button custom_button">Try Your Luck!</button>
       <input type="textarea" class="randomBox" ng-value="randomPolish" disabled> <div class="clearfix"></div>
@@ -40,10 +41,10 @@
         <th>Name</th>
         <th>Brand</th>
     </tr>
-    <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes" ng-click="openPolish(polish)">
+    <tr ng-if="!emptyResults" ng-repeat="polish in fil_polishes track by $index" ng-click="openPolish(polish)">
         <td class="checkCell" ng-if="editMode">checkbox</td>
         <td class="checkCell" ng-if="editMode">checkbox</td>
-        <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
+        <td class="swatchCol"><img class="thumbnail" ng-src="{{polish.Swatch}}"/></td>
         <td>{{polish.title}}</td>
         <td>{{polish.Brand}}</td>
     </tr>

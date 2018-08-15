@@ -28,8 +28,8 @@
         <th>Name</th>
         <th>Brand</th>
     </tr>
-    <tr ng-if="!emptyResults" ng-repeat="polish in fil_wish_polishes" ng-click="openPolish(polish)">
-        <td><img class="thumbnail" ng-src="{{polish.Swatch.src}}"/></td>
+    <tr ng-if="!emptyResults" ng-repeat="polish in fil_wish_polishes track by $index" ng-click="openPolish(polish)">
+        <td><img class="thumbnail" ng-src="{{polish.Swatch}}"/></td>
         <td>{{polish.title}}</td>
         <td>{{polish.Brand}}</td>
     </tr>

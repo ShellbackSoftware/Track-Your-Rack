@@ -1,15 +1,17 @@
 @font-face {
-	font-family: 'Indie Flower';
-	src: url('fonts/IndieFlower.ttf') format('truetype');
+	font-family: 'Jua';
+	src: url('fonts/Jua.ttf') format('truetype');
 	font-weight: normal;
-	font-style: normal;
+	font-style: sans-serif;
 }
 
 /* Set default fonts */
 body, h1, h2, h3, 
 button, input, textarea, table, select,
 .popup-sub-title  {
-	font-family: 'Indie Flower';
+	font-family: 'Jua';
+	font-style: sans-serif;
+	font-size: 1.2em;
 }
 
 ion-spinner {
@@ -230,13 +232,6 @@ ion-spinner {
 }
 
 /* ================= Text ================= */
-.version-number {
-    position: absolute;
-    bottom: 8px;
-    right: 16px;
-    font-size: 11px;
-}
-
 .noResult {
 	text-align: center;
 	margin-top: 10px;

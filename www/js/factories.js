@@ -88,7 +88,7 @@ angular.module('app.factories', [])
   
     // Add polish
     self.add = function(polish, inRack, inWish, isCurrent) {
-      var parameters = [polish.nid, polish.title, polish.Brand, polish.Finish, polish.Site, polish.Number, polish.Year, polish.Swatch.src, inRack, inWish, isCurrent];
+      var parameters = [polish.nid, polish.title, polish.Brand, polish.Finish, polish.Site, polish.Number, polish.Year, polish.Swatch, inRack, inWish, isCurrent];
       return DBA.query('INSERT INTO Polishes (nid, title, Brand, Finish, Site, Number, Year, Swatch, inRack, inWish, currentPolish) VALUES (?,?,?,?,?,?,?,?,?,?,?)', parameters);
     }
   
