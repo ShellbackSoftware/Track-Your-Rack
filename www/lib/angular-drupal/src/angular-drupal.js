@@ -179,7 +179,6 @@ function drupal($http, $q, drupalSettings, drupalToken) {
     });
   };
 
-
   // FLAG NODE
   this.flag_node = function(node, cookie) {
     var options = {
@@ -215,28 +214,6 @@ function drupal($http, $q, drupalSettings, drupalToken) {
               'action': user.action,
               'uid' : user.uid,   // Logged in user
               'entity_id': target // User to be followed
-            }
-    };
-    return this.token().then(function(token) {
-        options.headers['X-CSRF-Token'] = token;
-        return $http(options).then(function(result) {
-            if (result.status == 200) { return result.data; }
-        });
-    });
-  };
-
-  // FLAG NODE
-  this.flag_node = function(node, cookie) {
-    var options = {
-      method: 'POST',
-      cache : false,
-      url: this.restPath + '/flag/flag.json',
-      headers: { 'Content-Type': 'application/json',
-                  'Authentication': cookie },
-      data: { node: node,
-              'flag_name': node.flag_name,
-              'action': node.action,
-              'entity_id': node.nid
             }
     };
     return this.token().then(function(token) {

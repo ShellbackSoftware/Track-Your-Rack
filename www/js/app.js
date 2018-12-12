@@ -57,7 +57,6 @@ angular
     DataService.fillData().then(function (f) {
       $state.reload();
     })
-    
 });
 })
 

@@ -1024,28 +1024,21 @@ $scope.reset_form = function(){
 })
 
 // Login controller
-.controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window, UserService, User, Polish) {
+.controller('loginCtrl', function ($scope, $ionicPopup, $state, drupal, SessionService, $cookies, $window, UserService, DataService, User, Polish) {
   
   $scope.data = {};
   $scope.dataSent = false;
   var loginPopup;
 
-  // Extra cleanup if the tables didn't drop properly
-  Polish.getAllPolishes().then(function(polishes) {
-    if(polishes.length){
-      Polish.drop();
-      User.drop();
-      $state.reload();
-    }
-  })
-
- User.getAllUsers().then(function (users){
+  // Checks if the user is already logged in - local storage isn't empty, so there's already a session open
+  // Currently, this'll work in Ionic Serve, but Rack gets unflagged on device for some reason.
+  /*User.getAllUsers().then(function (users){
     if(users.length){
-      Polish.drop();
-      User.drop();
-      $state.reload();
+      DataService.fillData().then(function () {
+        $state.go('tabsController.home', {}, {reload: true});
+      })
     }
-  })
+  })*/
 
   $scope.resetPassword = function(){
     $scope.data = {};
@@ -1212,6 +1205,7 @@ $scope.showRegister = function() {
     });
   }
 
+  // Sends off registration info to the Drupal backend
   $scope.register = function(creds) {
     $scope.dataSent = true;
     if(!creds || !creds.username){
